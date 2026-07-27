@@ -24,3 +24,17 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+@font-face {
+  font-family: "Bebit";
+  src:
+    url("/Bebit_Bebit-Regular.woff2") format("woff2"),
+    url("/Bebit_Bebit-Regular.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+.font-bebit {
+  font-family: "Bebit", sans-serif;
+}

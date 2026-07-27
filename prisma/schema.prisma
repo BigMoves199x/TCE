@@ -1,0 +1,121 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ProductStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+model Product {
+  id          String        @id @default(cuid())
+  name        String
+  slug        String        @unique
+  description String
+  price       Int
+  category    String
+  imageUrl    String
+  images      String[]      @default([])
+  stock       Int           @default(0)
+  featured    Boolean       @default(false)
+  status      ProductStatus @default(DRAFT)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  orderItems OrderItem[]
+
+  @@index([category])
+  @@index([status])
+  @@index([featured])
+}
+
+model Customer {
+  id        String   @id @default(cuid())
+  firstName String
+  lastName  String
+  email     String   @unique
+  phone     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  orders Order[]
+
+  @@index([phone])
+}
+
+model Order {
+  id          String   @id @default(cuid())
+  orderNumber String   @unique
+  customerId  String
+  customer    Customer @relation(fields: [customerId], references: [id])
+
+  subtotal    Int
+  shippingFee Int @default(0)
+  total       Int
+
+  currency          String            @default("NGN")
+  paymentReference  String?           @unique
+  paymentStatus     PaymentStatus     @default(PENDING)
+  fulfillmentStatus FulfillmentStatus @default(PENDING)
+
+  shippingAddress String
+  shippingCity    String
+  shippingState   String
+  shippingCountry String  @default("Nigeria")
+  postalCode      String?
+  notes           String?
+
+  paidAt    DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  items OrderItem[]
+
+  @@index([customerId])
+  @@index([paymentStatus])
+  @@index([fulfillmentStatus])
+  @@index([createdAt])
+}
+
+model OrderItem {
+  id        String @id @default(cuid())
+  orderId   String
+  productId String
+
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
+
+  productName  String
+  productSlug  String
+  productImage String
+  unitPrice    Int
+  quantity     Int
+  lineTotal    Int
+
+  createdAt DateTime @default(now())
+
+  @@index([orderId])
+  @@index([productId])
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+enum FulfillmentStatus {
+  PENDING
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
