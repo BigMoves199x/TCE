@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import ProductForm from "@/app/components/admin/ProductForm";
+import ProductForm from "@/app/components/ui/admin/ProductForm";
 import { prisma } from "@/lib/prisma";
 
 type EditProductPageProps = {

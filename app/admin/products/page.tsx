@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import ProductsTable from "@/app/components/products/ProductTable";
+import ProductsTable from "@/app/components/ui/products/ProductTable";
 
 export const dynamic = "force-dynamic";
 

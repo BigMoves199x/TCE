@@ -9,7 +9,13 @@
  * 🟢 You can import this file directly.
  */
 export type * from './models/Product'
-export type * from './models/Customer'
+export type * from './models/User'
+export type * from './models/Account'
+export type * from './models/Session'
+export type * from './models/VerificationToken'
+export type * from './models/Address'
+export type * from './models/CheckoutSession'
+export type * from './models/CheckoutItem'
 export type * from './models/Order'
 export type * from './models/OrderItem'
 export type * from './commonInputTypes'

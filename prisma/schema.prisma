@@ -13,6 +13,33 @@ enum ProductStatus {
   ARCHIVED
 }
 
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+enum FulfillmentStatus {
+  PENDING
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+enum UserRole {
+  CUSTOMER
+  ADMIN
+}
+
+enum CheckoutStatus {
+  ACTIVE
+  COMPLETED
+  EXPIRED
+  CANCELLED
+}
+
 model Product {
   id          String        @id @default(cuid())
   name        String
@@ -29,56 +56,185 @@ model Product {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  orderItems OrderItem[]
+  orderItems    OrderItem[]
+  checkoutItems CheckoutItem[]
 
   @@index([category])
   @@index([status])
   @@index([featured])
 }
 
-model Customer {
-  id        String   @id @default(cuid())
-  firstName String
-  lastName  String
-  email     String   @unique
-  phone     String
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  firstName     String?
+  lastName      String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  passwordHash  String?
+  phone         String?
+  role          UserRole  @default(CUSTOMER)
+
+  accounts         Account[]
+  sessions         Session[]
+  addresses        Address[]
+  orders           Order[]
+  checkoutSessions CheckoutSession[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Address {
+  id         String  @id @default(cuid())
+  userId     String
+  label      String  @default("Home")
+  firstName  String
+  lastName   String
+  phone      String?
+  country    String
+  address1   String
+  address2   String?
+  city       String
+  state      String
+  postalCode String?
+  isDefault  Boolean @default(false)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  orders Order[]
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index([phone])
+  checkoutSessions CheckoutSession[]
+
+  @@index([userId])
+}
+
+model CheckoutSession {
+  id        String         @id @default(cuid())
+  userId    String
+  addressId String
+  status    CheckoutStatus @default(ACTIVE)
+
+  subtotal Int
+  shipping Int @default(0)
+  discount Int @default(0)
+  total    Int
+
+  expiresAt DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  address Address @relation(fields: [addressId], references: [id])
+
+  items CheckoutItem[]
+
+  @@index([userId])
+  @@index([addressId])
+  @@index([status])
+  @@index([expiresAt])
+}
+
+model CheckoutItem {
+  id                String @id @default(cuid())
+  checkoutSessionId String
+  productId         String
+
+  name     String
+  slug     String
+  imageUrl String
+  price    Int
+  quantity Int
+
+  checkoutSession CheckoutSession @relation(fields: [checkoutSessionId], references: [id], onDelete: Cascade)
+  product         Product         @relation(fields: [productId], references: [id])
+
+  @@index([checkoutSessionId])
+  @@index([productId])
 }
 
 model Order {
-  id          String   @id @default(cuid())
-  orderNumber String   @unique
-  customerId  String
-  customer    Customer @relation(fields: [customerId], references: [id])
+  id          String @id @default(cuid())
+  orderNumber String @unique
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
 
   subtotal    Int
   shippingFee Int @default(0)
+  discount    Int @default(0)
   total       Int
 
-  currency          String            @default("NGN")
-  paymentReference  String?           @unique
-  paymentStatus     PaymentStatus     @default(PENDING)
+  currency String @default("NGN")
+
+  paymentReference String?       @unique
+  paymentStatus    PaymentStatus @default(PENDING)
+
   fulfillmentStatus FulfillmentStatus @default(PENDING)
 
-  shippingAddress String
-  shippingCity    String
-  shippingState   String
-  shippingCountry String  @default("Nigeria")
-  postalCode      String?
-  notes           String?
+  shippingFirstName String
+  shippingLastName  String
+  shippingPhone     String?
 
-  paidAt    DateTime?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  shippingAddress1 String
+  shippingAddress2 String?
+  shippingCity     String
+  shippingState    String
+  shippingCountry  String  @default("Nigeria")
+  postalCode       String?
+
+  notes String?
+
+  paidAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   items OrderItem[]
 
-  @@index([customerId])
+  @@index([userId])
   @@index([paymentStatus])
   @@index([fulfillmentStatus])
   @@index([createdAt])
@@ -103,19 +259,4 @@ model OrderItem {
 
   @@index([orderId])
   @@index([productId])
-}
-
-enum PaymentStatus {
-  PENDING
-  PAID
-  FAILED
-  REFUNDED
-}
-
-enum FulfillmentStatus {
-  PENDING
-  PROCESSING
-  SHIPPED
-  DELIVERED
-  CANCELLED
 }
