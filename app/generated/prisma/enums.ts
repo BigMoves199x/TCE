@@ -18,6 +18,15 @@ export const ProductStatus = {
 export type ProductStatus = (typeof ProductStatus)[keyof typeof ProductStatus]
 
 
+export const ShippingMethod = {
+  STANDARD: 'STANDARD',
+  EXPRESS: 'EXPRESS',
+  PICKUP: 'PICKUP'
+} as const
+
+export type ShippingMethod = (typeof ShippingMethod)[keyof typeof ShippingMethod]
+
+
 export const PaymentStatus = {
   PENDING: 'PENDING',
   PAID: 'PAID',

@@ -183,6 +183,7 @@ export const CheckoutSessionScalarFieldEnum = {
   shipping: 'shipping',
   discount: 'discount',
   total: 'total',
+  shippingMethod: 'shippingMethod',
   expiresAt: 'expiresAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'

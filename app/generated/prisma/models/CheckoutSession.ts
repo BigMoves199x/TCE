@@ -49,6 +49,7 @@ export type CheckoutSessionMinAggregateOutputType = {
   shipping: number | null
   discount: number | null
   total: number | null
+  shippingMethod: $Enums.ShippingMethod | null
   expiresAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -63,6 +64,7 @@ export type CheckoutSessionMaxAggregateOutputType = {
   shipping: number | null
   discount: number | null
   total: number | null
+  shippingMethod: $Enums.ShippingMethod | null
   expiresAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -77,6 +79,7 @@ export type CheckoutSessionCountAggregateOutputType = {
   shipping: number
   discount: number
   total: number
+  shippingMethod: number
   expiresAt: number
   createdAt: number
   updatedAt: number
@@ -107,6 +110,7 @@ export type CheckoutSessionMinAggregateInputType = {
   shipping?: true
   discount?: true
   total?: true
+  shippingMethod?: true
   expiresAt?: true
   createdAt?: true
   updatedAt?: true
@@ -121,6 +125,7 @@ export type CheckoutSessionMaxAggregateInputType = {
   shipping?: true
   discount?: true
   total?: true
+  shippingMethod?: true
   expiresAt?: true
   createdAt?: true
   updatedAt?: true
@@ -135,6 +140,7 @@ export type CheckoutSessionCountAggregateInputType = {
   shipping?: true
   discount?: true
   total?: true
+  shippingMethod?: true
   expiresAt?: true
   createdAt?: true
   updatedAt?: true
@@ -236,6 +242,7 @@ export type CheckoutSessionGroupByOutputType = {
   shipping: number
   discount: number
   total: number
+  shippingMethod: $Enums.ShippingMethod | null
   expiresAt: Date
   createdAt: Date
   updatedAt: Date
@@ -273,6 +280,7 @@ export type CheckoutSessionWhereInput = {
   shipping?: Prisma.IntFilter<"CheckoutSession"> | number
   discount?: Prisma.IntFilter<"CheckoutSession"> | number
   total?: Prisma.IntFilter<"CheckoutSession"> | number
+  shippingMethod?: Prisma.EnumShippingMethodNullableFilter<"CheckoutSession"> | $Enums.ShippingMethod | null
   expiresAt?: Prisma.DateTimeFilter<"CheckoutSession"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"CheckoutSession"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"CheckoutSession"> | Date | string
@@ -290,6 +298,7 @@ export type CheckoutSessionOrderByWithRelationInput = {
   shipping?: Prisma.SortOrder
   discount?: Prisma.SortOrder
   total?: Prisma.SortOrder
+  shippingMethod?: Prisma.SortOrderInput | Prisma.SortOrder
   expiresAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -310,6 +319,7 @@ export type CheckoutSessionWhereUniqueInput = Prisma.AtLeast<{
   shipping?: Prisma.IntFilter<"CheckoutSession"> | number
   discount?: Prisma.IntFilter<"CheckoutSession"> | number
   total?: Prisma.IntFilter<"CheckoutSession"> | number
+  shippingMethod?: Prisma.EnumShippingMethodNullableFilter<"CheckoutSession"> | $Enums.ShippingMethod | null
   expiresAt?: Prisma.DateTimeFilter<"CheckoutSession"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"CheckoutSession"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"CheckoutSession"> | Date | string
@@ -327,6 +337,7 @@ export type CheckoutSessionOrderByWithAggregationInput = {
   shipping?: Prisma.SortOrder
   discount?: Prisma.SortOrder
   total?: Prisma.SortOrder
+  shippingMethod?: Prisma.SortOrderInput | Prisma.SortOrder
   expiresAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -349,6 +360,7 @@ export type CheckoutSessionScalarWhereWithAggregatesInput = {
   shipping?: Prisma.IntWithAggregatesFilter<"CheckoutSession"> | number
   discount?: Prisma.IntWithAggregatesFilter<"CheckoutSession"> | number
   total?: Prisma.IntWithAggregatesFilter<"CheckoutSession"> | number
+  shippingMethod?: Prisma.EnumShippingMethodNullableWithAggregatesFilter<"CheckoutSession"> | $Enums.ShippingMethod | null
   expiresAt?: Prisma.DateTimeWithAggregatesFilter<"CheckoutSession"> | Date | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"CheckoutSession"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"CheckoutSession"> | Date | string
@@ -361,6 +373,7 @@ export type CheckoutSessionCreateInput = {
   shipping?: number
   discount?: number
   total: number
+  shippingMethod?: $Enums.ShippingMethod | null
   expiresAt: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -378,6 +391,7 @@ export type CheckoutSessionUncheckedCreateInput = {
   shipping?: number
   discount?: number
   total: number
+  shippingMethod?: $Enums.ShippingMethod | null
   expiresAt: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -391,6 +405,7 @@ export type CheckoutSessionUpdateInput = {
   shipping?: Prisma.IntFieldUpdateOperationsInput | number
   discount?: Prisma.IntFieldUpdateOperationsInput | number
   total?: Prisma.IntFieldUpdateOperationsInput | number
+  shippingMethod?: Prisma.NullableEnumShippingMethodFieldUpdateOperationsInput | $Enums.ShippingMethod | null
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -408,6 +423,7 @@ export type CheckoutSessionUncheckedUpdateInput = {
   shipping?: Prisma.IntFieldUpdateOperationsInput | number
   discount?: Prisma.IntFieldUpdateOperationsInput | number
   total?: Prisma.IntFieldUpdateOperationsInput | number
+  shippingMethod?: Prisma.NullableEnumShippingMethodFieldUpdateOperationsInput | $Enums.ShippingMethod | null
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -423,6 +439,7 @@ export type CheckoutSessionCreateManyInput = {
   shipping?: number
   discount?: number
   total: number
+  shippingMethod?: $Enums.ShippingMethod | null
   expiresAt: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -435,6 +452,7 @@ export type CheckoutSessionUpdateManyMutationInput = {
   shipping?: Prisma.IntFieldUpdateOperationsInput | number
   discount?: Prisma.IntFieldUpdateOperationsInput | number
   total?: Prisma.IntFieldUpdateOperationsInput | number
+  shippingMethod?: Prisma.NullableEnumShippingMethodFieldUpdateOperationsInput | $Enums.ShippingMethod | null
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -449,6 +467,7 @@ export type CheckoutSessionUncheckedUpdateManyInput = {
   shipping?: Prisma.IntFieldUpdateOperationsInput | number
   discount?: Prisma.IntFieldUpdateOperationsInput | number
   total?: Prisma.IntFieldUpdateOperationsInput | number
+  shippingMethod?: Prisma.NullableEnumShippingMethodFieldUpdateOperationsInput | $Enums.ShippingMethod | null
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -473,6 +492,7 @@ export type CheckoutSessionCountOrderByAggregateInput = {
   shipping?: Prisma.SortOrder
   discount?: Prisma.SortOrder
   total?: Prisma.SortOrder
+  shippingMethod?: Prisma.SortOrder
   expiresAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -494,6 +514,7 @@ export type CheckoutSessionMaxOrderByAggregateInput = {
   shipping?: Prisma.SortOrder
   discount?: Prisma.SortOrder
   total?: Prisma.SortOrder
+  shippingMethod?: Prisma.SortOrder
   expiresAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -508,6 +529,7 @@ export type CheckoutSessionMinOrderByAggregateInput = {
   shipping?: Prisma.SortOrder
   discount?: Prisma.SortOrder
   total?: Prisma.SortOrder
+  shippingMethod?: Prisma.SortOrder
   expiresAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -613,6 +635,10 @@ export type EnumCheckoutStatusFieldUpdateOperationsInput = {
   set?: $Enums.CheckoutStatus
 }
 
+export type NullableEnumShippingMethodFieldUpdateOperationsInput = {
+  set?: $Enums.ShippingMethod | null
+}
+
 export type CheckoutSessionCreateNestedOneWithoutItemsInput = {
   create?: Prisma.XOR<Prisma.CheckoutSessionCreateWithoutItemsInput, Prisma.CheckoutSessionUncheckedCreateWithoutItemsInput>
   connectOrCreate?: Prisma.CheckoutSessionCreateOrConnectWithoutItemsInput
@@ -634,6 +660,7 @@ export type CheckoutSessionCreateWithoutUserInput = {
   shipping?: number
   discount?: number
   total: number
+  shippingMethod?: $Enums.ShippingMethod | null
   expiresAt: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -649,6 +676,7 @@ export type CheckoutSessionUncheckedCreateWithoutUserInput = {
   shipping?: number
   discount?: number
   total: number
+  shippingMethod?: $Enums.ShippingMethod | null
   expiresAt: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -693,6 +721,7 @@ export type CheckoutSessionScalarWhereInput = {
   shipping?: Prisma.IntFilter<"CheckoutSession"> | number
   discount?: Prisma.IntFilter<"CheckoutSession"> | number
   total?: Prisma.IntFilter<"CheckoutSession"> | number
+  shippingMethod?: Prisma.EnumShippingMethodNullableFilter<"CheckoutSession"> | $Enums.ShippingMethod | null
   expiresAt?: Prisma.DateTimeFilter<"CheckoutSession"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"CheckoutSession"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"CheckoutSession"> | Date | string
@@ -705,6 +734,7 @@ export type CheckoutSessionCreateWithoutAddressInput = {
   shipping?: number
   discount?: number
   total: number
+  shippingMethod?: $Enums.ShippingMethod | null
   expiresAt: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -720,6 +750,7 @@ export type CheckoutSessionUncheckedCreateWithoutAddressInput = {
   shipping?: number
   discount?: number
   total: number
+  shippingMethod?: $Enums.ShippingMethod | null
   expiresAt: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -759,6 +790,7 @@ export type CheckoutSessionCreateWithoutItemsInput = {
   shipping?: number
   discount?: number
   total: number
+  shippingMethod?: $Enums.ShippingMethod | null
   expiresAt: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -775,6 +807,7 @@ export type CheckoutSessionUncheckedCreateWithoutItemsInput = {
   shipping?: number
   discount?: number
   total: number
+  shippingMethod?: $Enums.ShippingMethod | null
   expiresAt: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -803,6 +836,7 @@ export type CheckoutSessionUpdateWithoutItemsInput = {
   shipping?: Prisma.IntFieldUpdateOperationsInput | number
   discount?: Prisma.IntFieldUpdateOperationsInput | number
   total?: Prisma.IntFieldUpdateOperationsInput | number
+  shippingMethod?: Prisma.NullableEnumShippingMethodFieldUpdateOperationsInput | $Enums.ShippingMethod | null
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -819,6 +853,7 @@ export type CheckoutSessionUncheckedUpdateWithoutItemsInput = {
   shipping?: Prisma.IntFieldUpdateOperationsInput | number
   discount?: Prisma.IntFieldUpdateOperationsInput | number
   total?: Prisma.IntFieldUpdateOperationsInput | number
+  shippingMethod?: Prisma.NullableEnumShippingMethodFieldUpdateOperationsInput | $Enums.ShippingMethod | null
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -832,6 +867,7 @@ export type CheckoutSessionCreateManyUserInput = {
   shipping?: number
   discount?: number
   total: number
+  shippingMethod?: $Enums.ShippingMethod | null
   expiresAt: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -844,6 +880,7 @@ export type CheckoutSessionUpdateWithoutUserInput = {
   shipping?: Prisma.IntFieldUpdateOperationsInput | number
   discount?: Prisma.IntFieldUpdateOperationsInput | number
   total?: Prisma.IntFieldUpdateOperationsInput | number
+  shippingMethod?: Prisma.NullableEnumShippingMethodFieldUpdateOperationsInput | $Enums.ShippingMethod | null
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -859,6 +896,7 @@ export type CheckoutSessionUncheckedUpdateWithoutUserInput = {
   shipping?: Prisma.IntFieldUpdateOperationsInput | number
   discount?: Prisma.IntFieldUpdateOperationsInput | number
   total?: Prisma.IntFieldUpdateOperationsInput | number
+  shippingMethod?: Prisma.NullableEnumShippingMethodFieldUpdateOperationsInput | $Enums.ShippingMethod | null
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -873,6 +911,7 @@ export type CheckoutSessionUncheckedUpdateManyWithoutUserInput = {
   shipping?: Prisma.IntFieldUpdateOperationsInput | number
   discount?: Prisma.IntFieldUpdateOperationsInput | number
   total?: Prisma.IntFieldUpdateOperationsInput | number
+  shippingMethod?: Prisma.NullableEnumShippingMethodFieldUpdateOperationsInput | $Enums.ShippingMethod | null
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -886,6 +925,7 @@ export type CheckoutSessionCreateManyAddressInput = {
   shipping?: number
   discount?: number
   total: number
+  shippingMethod?: $Enums.ShippingMethod | null
   expiresAt: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -898,6 +938,7 @@ export type CheckoutSessionUpdateWithoutAddressInput = {
   shipping?: Prisma.IntFieldUpdateOperationsInput | number
   discount?: Prisma.IntFieldUpdateOperationsInput | number
   total?: Prisma.IntFieldUpdateOperationsInput | number
+  shippingMethod?: Prisma.NullableEnumShippingMethodFieldUpdateOperationsInput | $Enums.ShippingMethod | null
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -913,6 +954,7 @@ export type CheckoutSessionUncheckedUpdateWithoutAddressInput = {
   shipping?: Prisma.IntFieldUpdateOperationsInput | number
   discount?: Prisma.IntFieldUpdateOperationsInput | number
   total?: Prisma.IntFieldUpdateOperationsInput | number
+  shippingMethod?: Prisma.NullableEnumShippingMethodFieldUpdateOperationsInput | $Enums.ShippingMethod | null
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -927,6 +969,7 @@ export type CheckoutSessionUncheckedUpdateManyWithoutAddressInput = {
   shipping?: Prisma.IntFieldUpdateOperationsInput | number
   discount?: Prisma.IntFieldUpdateOperationsInput | number
   total?: Prisma.IntFieldUpdateOperationsInput | number
+  shippingMethod?: Prisma.NullableEnumShippingMethodFieldUpdateOperationsInput | $Enums.ShippingMethod | null
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -972,6 +1015,7 @@ export type CheckoutSessionSelect<ExtArgs extends runtime.Types.Extensions.Inter
   shipping?: boolean
   discount?: boolean
   total?: boolean
+  shippingMethod?: boolean
   expiresAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -990,6 +1034,7 @@ export type CheckoutSessionSelectCreateManyAndReturn<ExtArgs extends runtime.Typ
   shipping?: boolean
   discount?: boolean
   total?: boolean
+  shippingMethod?: boolean
   expiresAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1006,6 +1051,7 @@ export type CheckoutSessionSelectUpdateManyAndReturn<ExtArgs extends runtime.Typ
   shipping?: boolean
   discount?: boolean
   total?: boolean
+  shippingMethod?: boolean
   expiresAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1022,12 +1068,13 @@ export type CheckoutSessionSelectScalar = {
   shipping?: boolean
   discount?: boolean
   total?: boolean
+  shippingMethod?: boolean
   expiresAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type CheckoutSessionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "addressId" | "status" | "subtotal" | "shipping" | "discount" | "total" | "expiresAt" | "createdAt" | "updatedAt", ExtArgs["result"]["checkoutSession"]>
+export type CheckoutSessionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "addressId" | "status" | "subtotal" | "shipping" | "discount" | "total" | "shippingMethod" | "expiresAt" | "createdAt" | "updatedAt", ExtArgs["result"]["checkoutSession"]>
 export type CheckoutSessionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   address?: boolean | Prisma.AddressDefaultArgs<ExtArgs>
@@ -1059,6 +1106,7 @@ export type $CheckoutSessionPayload<ExtArgs extends runtime.Types.Extensions.Int
     shipping: number
     discount: number
     total: number
+    shippingMethod: $Enums.ShippingMethod | null
     expiresAt: Date
     createdAt: Date
     updatedAt: Date
@@ -1496,6 +1544,7 @@ export interface CheckoutSessionFieldRefs {
   readonly shipping: Prisma.FieldRef<"CheckoutSession", 'Int'>
   readonly discount: Prisma.FieldRef<"CheckoutSession", 'Int'>
   readonly total: Prisma.FieldRef<"CheckoutSession", 'Int'>
+  readonly shippingMethod: Prisma.FieldRef<"CheckoutSession", 'ShippingMethod'>
   readonly expiresAt: Prisma.FieldRef<"CheckoutSession", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"CheckoutSession", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"CheckoutSession", 'DateTime'>

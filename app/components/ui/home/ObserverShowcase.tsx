@@ -306,7 +306,7 @@ export default function ObserverShowcase() {
                     </p>
                   </div>
 
-                  <h2 className="observer-heading font-abril mt-7 text-[clamp(3.8rem,8vw,9rem)] leading-[0.88] tracking-[-0.045em] text-white">
+                  <h2 className="observer-heading font-abril mt-7 text-[clamp(3.8rem,6vw,9rem)] leading-[0.88] tracking-[-0.045em] text-white">
                     {slide.title}
                   </h2>
 

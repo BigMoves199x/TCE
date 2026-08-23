@@ -13,6 +13,12 @@ enum ProductStatus {
   ARCHIVED
 }
 
+enum ShippingMethod {
+  STANDARD
+  EXPRESS
+  PICKUP
+}
+
 enum PaymentStatus {
   PENDING
   PAID
@@ -160,6 +166,8 @@ model CheckoutSession {
   shipping Int @default(0)
   discount Int @default(0)
   total    Int
+
+  shippingMethod ShippingMethod?
 
   expiresAt DateTime
 
