@@ -7,42 +7,73 @@ import { SplitText } from "gsap/SplitText";
 
 gsap.registerPlugin(Observer, SplitText);
 
+/*
+|--------------------------------------------------------------------------
+| TCE SHOWCASE CONTENT
+|--------------------------------------------------------------------------
+|
+| Each slide uses one SOLID TCE color.
+|
+| No gradients.
+| No glass cards.
+| No excessive decoration.
+|
+*/
+
 const slides = [
   {
-    eyebrow: "The Creative Explorer",
-    title: "Precision in Every Detail.",
+    kicker: "Ideas need more than imagination.",
+    title: "Ideas deserve direction.",
     description:
-      "We build thoughtful brands, digital experiences and creative products with intention.",
-    accent: "#03CEA4",
-    background:
-      "linear-gradient(135deg, #07111f 0%, #0a2a28 50%, #07111f 100%)",
-  },
-  {
-    eyebrow: "Creative Direction",
-    title: "Creativity Without Compromise.",
-    description:
-      "Every visual decision is shaped to feel distinctive, memorable and true to your brand.",
+      "We give ambitious ideas the clarity, creativity and structure they need to become something real.",
+
+    // switched from navy to TCE red
+    background: "#FB4D3D",
+    foreground: "#FFFFFF",
+    muted: "rgba(255,255,255,0.68)",
     accent: "#EAC435",
-    background:
-      "linear-gradient(135deg, #07111f 0%, #30290d 50%, #07111f 100%)",
+    ghost: "rgba(255,255,255,0.055)",
   },
+
   {
-    eyebrow: "Technology",
-    title: "Built to Perform Beautifully.",
+    kicker: "Distinctive by intention.",
+    title: "Creativity with consequence.",
     description:
-      "From websites to business systems, we combine strong design with dependable technology.",
-    accent: "#FB4D3D",
-    background:
-      "linear-gradient(135deg, #07111f 0%, #351612 50%, #07111f 100%)",
+      "We don't create simply to make things look good. We create identities, experiences and stories designed to be remembered.",
+
+    background: "#EAC435",
+    foreground: "#07111f",
+    muted: "rgba(7,17,31,0.62)",
+    accent: "#07111f",
+    ghost: "rgba(7,17,31,0.055)",
   },
+
   {
-    eyebrow: "TCE Products",
-    title: "Ideas Made Tangible.",
+    kicker: "Beauty should perform.",
+    title: "Built to move ideas forward.",
     description:
-      "Original artwork, customized fashion and creative tools designed to inspire exploration.",
-    accent: "#03CEA4",
-    background:
-      "linear-gradient(135deg, #07111f 0%, #14263a 50%, #07111f 100%)",
+      "Technology becomes meaningful when it solves a real problem. We build digital experiences where design and function move as one.",
+
+    background: "#03CEA4",
+    foreground: "#07111f",
+    muted: "rgba(7,17,31,0.60)",
+    accent: "#07111f",
+    ghost: "rgba(7,17,31,0.055)",
+  },
+
+  {
+    eyebrow: "",
+    kicker: "This is where imagination becomes tangible.",
+    title: "We make ideas real.",
+    description:
+      "Brands. Technology. Art. Products. Experiences. TCE exists to explore what an idea could become — and then build it.",
+
+    // switched from red to TCE navy
+    background: "#07111f",
+    foreground: "#FFFFFF",
+    muted: "rgba(255,255,255,0.52)",
+    accent: "#EAC435",
+    ghost: "rgba(255,255,255,0.035)",
   },
 ];
 
@@ -52,305 +83,604 @@ export default function ObserverShowcase() {
   useLayoutEffect(() => {
     const root = rootRef.current;
 
-    if (!root) {
-      return;
-    }
+    if (!root) return;
 
-    const sectionElements =
-      gsap.utils.toArray<HTMLElement>(".observer-slide", root);
+    const showcase = root;
 
-    const backgrounds =
-      gsap.utils.toArray<HTMLElement>(".observer-bg", root);
+    const sections = gsap.utils.toArray<HTMLElement>(
+      ".tce-showcase-slide",
+      showcase,
+    );
 
-    const outerWrappers =
-      gsap.utils.toArray<HTMLElement>(".observer-outer", root);
+    const titleElements = gsap.utils.toArray<HTMLElement>(
+      ".tce-showcase-title",
+      showcase,
+    );
 
-    const innerWrappers =
-      gsap.utils.toArray<HTMLElement>(".observer-inner", root);
+    const numberElements = gsap.utils.toArray<HTMLElement>(
+      ".tce-showcase-number",
+      showcase,
+    );
 
-    const headings =
-      gsap.utils.toArray<HTMLElement>(".observer-heading", root);
-
-    if (
-      !sectionElements.length ||
-      sectionElements.length !== backgrounds.length ||
-      sectionElements.length !== outerWrappers.length ||
-      sectionElements.length !== innerWrappers.length ||
-      sectionElements.length !== headings.length
-    ) {
-      return;
-    }
-
-    const splitHeadings = headings.map(
-      (heading) =>
-        new SplitText(heading, {
-          type: "chars,words,lines",
-          linesClass: "observer-line",
-          mask: "lines",
+    const splitTitles = titleElements.map(
+      (title) =>
+        new SplitText(title, {
+          type: "words,chars",
+          wordsClass: "tce-word",
+          charsClass: "tce-char",
         }),
     );
 
     let currentIndex = -1;
     let animating = false;
+    let leavingShowcase = false;
 
-    const wrap = gsap.utils.wrap(0, sectionElements.length);
+    let observer: ReturnType<typeof Observer.create>;
 
-    gsap.set(sectionElements, {
+    /*
+    |--------------------------------------------------------------------------
+    | INITIAL STATE
+    |--------------------------------------------------------------------------
+    */
+
+    gsap.set(sections, {
       autoAlpha: 0,
     });
 
-    gsap.set(outerWrappers, {
-      yPercent: 100,
-    });
+    /*
+    |--------------------------------------------------------------------------
+    | SLIDE TRANSITION
+    |--------------------------------------------------------------------------
+    */
 
-    gsap.set(innerWrappers, {
-      yPercent: -100,
-    });
+    function goToSection(index: number, direction: 1 | -1) {
+      if (animating || index < 0 || index >= sections.length) {
+        return;
+      }
 
-    function goToSection(index: number, direction: number) {
-      index = wrap(index);
       animating = true;
 
-      const fromTop = direction === -1;
-      const directionFactor = fromTop ? -1 : 1;
+      const incoming = sections[index];
 
-      const timeline = gsap.timeline({
+      const incomingContent = incoming.querySelectorAll<HTMLElement>(
+        "[data-showcase-reveal]",
+      );
+
+      const incomingRule = incoming.querySelector<HTMLElement>(
+        "[data-showcase-rule]",
+      );
+
+      const incomingIndex = numberElements[index];
+
+      const directionFactor = direction === 1 ? 1 : -1;
+
+      const tl = gsap.timeline({
         defaults: {
-          duration: 1.1,
-          ease: "power2.inOut",
+          ease: "power4.inOut",
         },
+
         onComplete: () => {
           animating = false;
         },
       });
 
-      if (currentIndex >= 0) {
-        gsap.set(sectionElements[currentIndex], {
-          zIndex: 0,
-        });
+      /*
+      |--------------------------------------------------------------------------
+      | OUTGOING
+      |--------------------------------------------------------------------------
+      */
 
-        timeline
-          .to(
-            backgrounds[currentIndex],
-            {
-              yPercent: -12 * directionFactor,
+      if (currentIndex >= 0) {
+        const outgoing = sections[currentIndex];
+
+        const outgoingTitle = splitTitles[currentIndex];
+
+        tl.to(
+          outgoingTitle.chars,
+          {
+            yPercent: -120 * directionFactor,
+
+            autoAlpha: 0,
+
+            stagger: {
+              each: 0.008,
+              from: direction === 1 ? "start" : "end",
             },
-            0,
-          )
-          .to(
-            sectionElements[currentIndex],
-            {
-              autoAlpha: 0,
-              duration: 0.45,
-            },
-            0.55,
-          );
+
+            duration: 0.55,
+
+            ease: "power3.in",
+          },
+          0,
+        );
+
+        tl.to(
+          outgoing,
+          {
+            autoAlpha: 0,
+            duration: 0.4,
+          },
+          0.35,
+        );
       }
 
-      gsap.set(sectionElements[index], {
+      /*
+      |--------------------------------------------------------------------------
+      | INCOMING BACKGROUND
+      |--------------------------------------------------------------------------
+      */
+
+      gsap.set(incoming, {
         autoAlpha: 1,
-        zIndex: 1,
+        zIndex: 2,
       });
 
-      timeline
-        .fromTo(
-          [
-            outerWrappers[index],
-            innerWrappers[index],
-          ],
+      /*
+      |--------------------------------------------------------------------------
+      | GIANT NUMBER
+      |--------------------------------------------------------------------------
+      */
+
+      if (incomingIndex) {
+        tl.fromTo(
+          incomingIndex,
           {
-            yPercent: (itemIndex: number) =>
-              itemIndex
-                ? -100 * directionFactor
-                : 100 * directionFactor,
-          },
-          {
-            yPercent: 0,
-          },
-          0,
-        )
-        .fromTo(
-          backgrounds[index],
-          {
-            yPercent: 12 * directionFactor,
-            scale: 1.08,
-          },
-          {
-            yPercent: 0,
-            scale: 1,
-          },
-          0,
-        )
-        .fromTo(
-          splitHeadings[index].chars,
-          {
+            scale: 1.22,
             autoAlpha: 0,
-            yPercent: 140 * directionFactor,
-            rotateX: 35 * directionFactor,
           },
           {
+            scale: 1,
             autoAlpha: 1,
-            yPercent: 0,
-            rotateX: 0,
-            duration: 0.9,
+            duration: 1.25,
             ease: "power3.out",
-            stagger: {
-              each: 0.018,
-              from: "random",
-            },
           },
           0.2,
-        )
-        .fromTo(
-          sectionElements[index].querySelectorAll(
-            "[data-observer-reveal]",
-          ),
-          {
-            y: 25 * directionFactor,
-            autoAlpha: 0,
-          },
-          {
-            y: 0,
-            autoAlpha: 1,
-            stagger: 0.08,
-            duration: 0.55,
-            ease: "power2.out",
-          },
-          0.45,
         );
+      }
+
+      /*
+      |--------------------------------------------------------------------------
+      | MAIN TITLE
+      |--------------------------------------------------------------------------
+      */
+
+      tl.fromTo(
+        splitTitles[index].chars,
+        {
+          yPercent: 130 * directionFactor,
+
+          autoAlpha: 0,
+        },
+        {
+          yPercent: 0,
+          autoAlpha: 1,
+
+          stagger: {
+            each: 0.012,
+            from: "start",
+          },
+
+          duration: 0.9,
+
+          ease: "power4.out",
+        },
+        0.28,
+      );
+
+      /*
+      |--------------------------------------------------------------------------
+      | SUPPORTING CONTENT
+      |--------------------------------------------------------------------------
+      */
+
+      tl.fromTo(
+        incomingContent,
+        {
+          y: 30 * directionFactor,
+
+          autoAlpha: 0,
+        },
+        {
+          y: 0,
+          autoAlpha: 1,
+
+          stagger: 0.08,
+
+          duration: 0.7,
+
+          ease: "power3.out",
+        },
+        0.55,
+      );
+
+      /*
+      |--------------------------------------------------------------------------
+      | EDITORIAL RULE
+      |--------------------------------------------------------------------------
+      */
+
+      if (incomingRule) {
+        tl.fromTo(
+          incomingRule,
+          {
+            scaleX: 0,
+          },
+          {
+            scaleX: 1,
+            duration: 0.85,
+            ease: "power3.out",
+          },
+          0.55,
+        );
+      }
 
       currentIndex = index;
     }
 
-    const observer = Observer.create({
-      target: root,
+    /*
+    |--------------------------------------------------------------------------
+    | LEAVE DOWN → NEXT PAGE SECTION
+    |--------------------------------------------------------------------------
+    */
+
+    function leaveShowcaseDown() {
+      if (leavingShowcase || animating) {
+        return;
+      }
+
+      const nextSection = showcase.nextElementSibling as HTMLElement | null;
+
+      if (!nextSection) return;
+
+      leavingShowcase = true;
+
+      observer.disable();
+
+      nextSection.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+
+      window.setTimeout(() => {
+        leavingShowcase = false;
+      }, 1000);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | LEAVE UP → HERO
+    |--------------------------------------------------------------------------
+    */
+
+    function leaveShowcaseUp() {
+      if (leavingShowcase || animating) {
+        return;
+      }
+
+      leavingShowcase = true;
+
+      observer.disable();
+
+      window.scrollTo({
+        top: Math.max(0, showcase.offsetTop - window.innerHeight),
+
+        behavior: "smooth",
+      });
+
+      window.setTimeout(() => {
+        leavingShowcase = false;
+      }, 1000);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | GSAP OBSERVER
+    |--------------------------------------------------------------------------
+    */
+
+    observer = Observer.create({
+      target: showcase,
+
       type: "wheel,touch,pointer",
+
       wheelSpeed: -1,
-      tolerance: 10,
+
+      tolerance: 12,
+
       preventDefault: true,
 
+      /*
+       * scroll upward
+       */
+
       onDown: () => {
-        if (!animating) {
-          goToSection(currentIndex - 1, -1);
+        if (animating || leavingShowcase) {
+          return;
         }
+
+        if (currentIndex === 0) {
+          leaveShowcaseUp();
+
+          return;
+        }
+
+        goToSection(currentIndex - 1, -1);
       },
 
+      /*
+       * scroll downward
+       */
+
       onUp: () => {
-        if (!animating) {
-          goToSection(currentIndex + 1, 1);
+        if (animating || leavingShowcase) {
+          return;
         }
+
+        const lastIndex = sections.length - 1;
+
+        if (currentIndex === lastIndex) {
+          leaveShowcaseDown();
+
+          return;
+        }
+
+        goToSection(currentIndex + 1, 1);
       },
     });
 
+    /*
+    |--------------------------------------------------------------------------
+    | ENABLE OBSERVER ONLY WHILE THIS SECTION IS ACTIVE
+    |--------------------------------------------------------------------------
+    */
+
+    const intersectionObserver = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry || leavingShowcase) {
+          return;
+        }
+
+        if (entry.isIntersecting && entry.intersectionRatio >= 0.72) {
+          observer.enable();
+        } else {
+          observer.disable();
+        }
+      },
+
+      {
+        threshold: [0, 0.25, 0.5, 0.72, 1],
+      },
+    );
+
+    intersectionObserver.observe(showcase);
+
+    /*
+    |--------------------------------------------------------------------------
+    | FIRST SCREEN
+    |--------------------------------------------------------------------------
+    */
+
     goToSection(0, 1);
+
+    /*
+    |--------------------------------------------------------------------------
+    | CLEANUP
+    |--------------------------------------------------------------------------
+    */
 
     return () => {
       observer.kill();
 
-      splitHeadings.forEach((split) => {
+      intersectionObserver.disconnect();
+
+      splitTitles.forEach((split) => {
         split.revert();
       });
 
-      gsap.killTweensOf([
-        sectionElements,
-        backgrounds,
-        outerWrappers,
-        innerWrappers,
-      ]);
+      gsap.killTweensOf(sections);
+
+      gsap.killTweensOf(titleElements);
+
+      gsap.killTweensOf(numberElements);
     };
   }, []);
 
   return (
     <section
       ref={rootRef}
-      className="relative h-screen overflow-hidden bg-[#07111f]"
-      aria-label="TCE brand showcase"
+      className="relative h-screen min-h-[700px] w-full overflow-hidden"
+      
     >
-      {slides.map((slide, index) => (
-        <section
-          key={slide.title}
-          className="observer-slide invisible absolute inset-0"
-          aria-label={`Slide ${index + 1} of ${slides.length}`}
-        >
-          <div className="observer-outer absolute inset-0 overflow-hidden">
-            <div className="observer-inner absolute inset-0 overflow-hidden">
-              <div
-                className="observer-bg absolute inset-0"
-                style={{
-                  background: slide.background,
-                }}
-              />
+      {slides.map((slide, index) => {
+        const number = String(index + 1).padStart(2, "0");
 
-              <div className="absolute" />
+        const isLast = index === slides.length - 1;
 
-              <div className="relative z-10 mx-auto flex h-full w-full max-w-7xl items-center px-5 sm:px-8 lg:px-10">
-                <div className="max-w-5xl">
-                  <div
-                    data-observer-reveal
-                    className="flex items-center gap-3"
-                  >
-                    <span
-                      className="h-px w-12"
-                      style={{
-                        backgroundColor: slide.accent,
-                      }}
-                    />
+        return (
+          <section
+            key={slide.title}
+            className="
+                tce-showcase-slide
+                invisible
+                absolute
+                inset-0
+                overflow-hidden
+              "
+            style={{
+              backgroundColor: slide.background,
 
-                    <p
-                      className="text-xs font-semibold uppercase tracking-[0.28em]"
-                      style={{
-                        color: slide.accent,
-                      }}
-                    >
-                      {slide.eyebrow}
-                    </p>
-                  </div>
+              color: slide.foreground,
+            }}
+          >
+    
 
-                  <h2 className="observer-heading font-abril mt-7 text-[clamp(3.8rem,6vw,9rem)] leading-[0.88] tracking-[-0.045em] text-white">
-                    {slide.title}
-                  </h2>
 
-                  <p
-                    data-observer-reveal
-                    className="mt-7 max-w-2xl text-base leading-8 text-white/55 sm:text-lg"
-                  >
-                    {slide.description}
-                  </p>
-
-                  <div
-                    data-observer-reveal
-                    className="mt-10 flex items-center gap-5"
-                  >
-                    <span className="text-sm text-white/45">
-                      {String(index + 1).padStart(2, "0")}
-                    </span>
-
-                    <div className="h-px w-24 bg-white/15">
-                      <div
-                        className="h-full"
-                        style={{
-                          width: `${
-                            ((index + 1) / slides.length) * 100
-                          }%`,
-                          backgroundColor: slide.accent,
-                        }}
-                      />
-                    </div>
-
-                    <span className="text-sm text-white/25">
-                      {String(slides.length).padStart(2, "0")}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              <p className="absolute bottom-8 right-8 z-20 hidden text-xs uppercase tracking-[0.22em] text-white/30 md:block">
-                Scroll or swipe
-              </p>
+            <div
+              data-showcase-reveal
+              className="
+                  absolute
+                  left-8
+                  right-8
+                  top-8
+                  z-20
+                  flex
+                  items-center
+                  justify-between
+                  sm:left-10
+                  sm:right-10
+                "
+            >
+             
             </div>
-          </div>
-        </section>
-      ))}
+
+            {/* =================================================
+                  MAIN CONTENT
+              ================================================= */}
+
+            <div
+              className="
+                  relative
+                  z-10
+                  mx-auto
+                  flex
+                  h-full
+                  w-full
+                  max-w-[1500px]
+                  items-center
+                  px-7
+                  sm:px-12
+                  lg:px-16
+                  xl:px-20
+                "
+            >
+              <div
+                className="
+                    w-full
+                    max-w-[1150px]
+                  "
+              >
+
+            
+
+                {/* KICKER */}
+
+                <p
+                  data-showcase-reveal
+                  className="
+                      mt-8
+                      text-xs
+                      font-semibold
+                      uppercase
+                      tracking-[0.24em]
+                      sm:text-sm
+                    "
+                  style={{
+                    color: slide.muted,
+                  }}
+                >
+                  {slide.kicker}
+                </p>
+
+                {/* TITLE */}
+
+                <h2
+                  className="
+                      tce-showcase-title
+                      mt-4
+                      max-w-[1100px]
+                      overflow-hidden
+                      font-abril
+                      text-[clamp(4.4rem,9vw,10rem)]
+                      font-black
+                      leading-[0.82]
+                      tracking-[-0.065em]
+                    "
+                >
+                  {slide.title}
+                </h2>
+
+                {/* LINE */}
+
+                <div
+                  data-showcase-rule
+                  className="
+                      mt-9
+                      h-px
+                      w-full
+                      max-w-[180px]
+                      origin-left
+                    "
+                  style={{
+                    backgroundColor: slide.accent,
+                  }}
+                />
+
+                {/* DESCRIPTION */}
+
+                <p
+                  data-showcase-reveal
+                  className="
+                      mt-7
+                      max-w-2xl
+                      text-base
+                      leading-8
+                      sm:text-lg
+                      lg:text-xl
+                      lg:leading-9
+                    "
+                  style={{
+                    color: slide.muted,
+                  }}
+                >
+                  {slide.description}
+                </p>
+              </div>
+            </div>
+
+            {/* =================================================
+                  BOTTOM NAVIGATION
+              ================================================= */}
+
+            <div
+              data-showcase-reveal
+              className="
+                  absolute
+                  bottom-8
+                  left-8
+                  right-8
+                  z-20
+                  flex
+                  items-end
+                  justify-between
+                  sm:left-10
+                  sm:right-10
+                "
+            >
+              {/* PROGRESS */}
+
+              <div className="flex items-center gap-4">
+                {slides.map((_, dotIndex) => (
+                  <span
+                    key={dotIndex}
+                    className={`
+                          block
+                          h-px
+                          transition-all
+                          duration-500
+
+                          ${dotIndex === index ? "w-12" : "w-4"}
+                        `}
+                    style={{
+                      backgroundColor:
+                        dotIndex === index ? slide.accent : slide.muted,
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
+          </section>
+        );
+      })}
     </section>
   );
 }
