@@ -43,6 +43,8 @@ const bebit = localFont({
 export const metadata: Metadata = {
   title: "The Creative Explorer",
   description: "Explore Creativity. Build Innovation.",
+  icons: "/icon.png",
+  
 };
 
 export default function RootLayout({

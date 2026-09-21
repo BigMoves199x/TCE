@@ -16,381 +16,325 @@ export default function SipAndPaintCampaign() {
 
   useLayoutEffect(() => {
     const section = sectionRef.current;
-
     if (!section) return;
 
     const ctx = gsap.context(() => {
+      const tl = gsap.timeline({
+        defaults: { ease: "power4.out" },
+      });
+
+      gsap.set("[data-word]", {
+        yPercent: 115,
+        rotate: 2,
+      });
+
       gsap.set("[data-reveal]", {
         y: 18,
         autoAlpha: 0,
       });
 
-      gsap.timeline({
-        defaults: {
-          ease: "power3.out",
-        },
-      }).to("[data-reveal]", {
-        y: 0,
-        autoAlpha: 1,
-        duration: 0.8,
-        stagger: 0.08,
+      gsap.set("[data-ticket]", {
+        y: 35,
+        rotate: 5,
+        autoAlpha: 0,
       });
 
-      gsap.to("[data-marquee-top]", {
-        xPercent: -50,
-        duration: 34,
+      tl.to("[data-word]", {
+        yPercent: 0,
+        rotate: 0,
+        duration: 0.95,
+        stagger: 0.1,
+      })
+        .to(
+          "[data-reveal]",
+          {
+            y: 0,
+            autoAlpha: 1,
+            duration: 0.65,
+            stagger: 0.07,
+          },
+          "-=.55",
+        )
+        .to(
+          "[data-ticket]",
+          {
+            y: 0,
+            rotate: -3,
+            autoAlpha: 1,
+            duration: 0.9,
+          },
+          "-=.6",
+        );
+
+      gsap.to("[data-float-one]", {
+        y: -12,
+        rotate: 5,
+        duration: 4.5,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut",
+      });
+
+      gsap.to("[data-float-two]", {
+        y: 14,
+        rotate: -7,
+        duration: 5.5,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut",
+      });
+
+      gsap.to("[data-orbit]", {
+        rotate: 360,
+        duration: 32,
         repeat: -1,
         ease: "none",
       });
 
-      gsap.fromTo(
-        "[data-marquee-bottom]",
-        {
-          xPercent: -50,
-        },
-        {
-          xPercent: 0,
-          duration: 38,
-          repeat: -1,
-          ease: "none",
-        },
-      );
-
-      gsap.to("[data-ticket-ring]", {
-        scale: 1.08,
-        autoAlpha: 0,
-        duration: 2,
+      gsap.to("[data-marquee]", {
+        xPercent: -50,
+        duration: 28,
         repeat: -1,
-        ease: "power1.out",
+        ease: "none",
       });
     }, section);
 
-    return () => {
-      ctx.revert();
-    };
+    return () => ctx.revert();
   }, []);
 
   return (
     <section
       ref={sectionRef}
-      className="
-        relative
-        flex
-        min-h-screen
-        w-full
-        items-center
-        overflow-hidden
-        bg-[#07111f]
-        text-white
-      "
-      aria-label="TCE Sip and Paint"
+      className="relative min-h-[100svh] w-full overflow-hidden bg-[#F2EEE3] text-[#07111F]"
+      aria-label="TCE Sip and Paint campaign"
     >
-      {/* =========================================================
-          SOFT BACKGROUND ACCENTS
-      ========================================================= */}
+      {/* CAMPAIGN FRAME */}
+      <div className="pointer-events-none absolute inset-3 border border-[#07111F]/10 sm:inset-5" />
 
-      <div className="absolute inset-0 bg-[#07111f]" />
 
-      <div className="pointer-events-none absolute -left-40 top-[25%] size-[28rem] rounded-full bg-[#03CEA4]/[0.06] blur-[150px]" />
-
-      <div className="pointer-events-none absolute -right-32 bottom-[18%] size-[26rem] rounded-full bg-[#FB4D3D]/[0.05] blur-[160px]" />
-
-      {/* =========================================================
-          TOP SLIDING TEXT
-      ========================================================= */}
-
-      <div className="pointer-events-none absolute left-0 top-[9%] w-full overflow-hidden">
-        <div
-          data-marquee-top
-          className="flex w-max whitespace-nowrap"
-        >
-          {Array.from({ length: 6 }).map((_, index) => (
-            <div
-              key={index}
-              className="flex items-center pr-14"
-            >
-              <span className="font-abril text-[clamp(2.6rem,4.5vw,4.8rem)] font-normal tracking-[-0.035em] text-white/[0.04]">
-                SIP
-              </span>
-
-              <span className="px-7 text-lg text-[#EAC435]/25">
-                ✦
-              </span>
-
-              <span className="font-abril text-[clamp(2.6rem,4.5vw,4.8rem)] font-normal tracking-[-0.035em] text-[#03CEA4]/[0.07]">
-                PAINT
-              </span>
-
-              <span className="px-7 text-lg text-[#FB4D3D]/25">
-                ✦
-              </span>
-
-              <span className="font-abril text-[clamp(2.6rem,4.5vw,4.8rem)] font-normal tracking-[-0.035em] text-white/[0.04]">
-                CREATE
-              </span>
-
-              <span className="px-7 text-lg text-[#EAC435]/25">
-                ✦
-              </span>
-
-              <span className="font-abril text-[clamp(2.6rem,4.5vw,4.8rem)] font-normal tracking-[-0.035em] text-[#FB4D3D]/[0.07]">
-                CONNECT
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* =========================================================
-          MAIN CONTENT
-      ========================================================= */}
-
-      <div className="relative z-10 mx-auto flex w-full max-w-[1200px] flex-col items-center px-6 py-32 text-center sm:px-10 lg:px-14">
-        {/* EYEBROW */}
-
-        <div
+      {/* TOP CAMPAIGN BAR */}
+      <header className="relative z-30 mx-auto flex w-full max-w-[1500px] items-center justify-between px-6 py-7 sm:px-10 lg:px-14">
+        <p
           data-reveal
-          className="flex items-center gap-4"
+          className="text-[9px] font-bold uppercase tracking-[.25em] text-[#07111F]/55 sm:text-[10px]"
         >
-          <span className="h-px w-8 bg-[#03CEA4]/70" />
-
-          <p className="text-[9px] font-medium uppercase tracking-[0.32em] text-[#03CEA4]/80 sm:text-[10px]">
-            The Creative Explorer Presents
-          </p>
-
-          <span className="h-px w-8 bg-[#03CEA4]/70" />
-        </div>
-
-        {/* HEADLINE */}
-
-        <div
-          data-reveal
-          className="mt-9 max-w-4xl"
-        >
-          <h2
-            className="
-              font-abril
-              text-[clamp(3rem,5.5vw,5.8rem)]
-              font-normal
-              leading-[0.96]
-              tracking-[-0.04em]
-              text-white
-            "
-          >
-            An invitation to create,
-            <span className="block text-[#EAC435]">
-              connect and linger.
-            </span>
-          </h2>
-        </div>
-
-        {/* COPY */}
+          The Creative Explorer Presents
+        </p>
 
         <p
           data-reveal
-          className="
-            mt-7
-            max-w-2xl
-            text-sm
-            leading-7
-            text-white/46
-            sm:text-[15px]
-            sm:leading-8
-          "
+          className="text-[9px] font-bold uppercase tracking-[.2em] text-[#FB4D3D]"
         >
-          A thoughtfully curated Sip & Paint experience by
-          The Creative Explorer — with guided painting, drinks,
-          chops and an atmosphere designed for easy creativity.
+          TCE / Experience 001
         </p>
+      </header>
 
-        {/* DIVIDER */}
 
+      {/* DECORATIVE ART */}
+      <div
+        data-float-one
+        className="pointer-events-none absolute -left-10 top-[20%] size-28 rounded-full bg-[#03CEA4] sm:left-[4%] sm:size-36 lg:size-44"
+      />
+
+      <div
+        data-float-two
+        className="pointer-events-none absolute -right-10 top-[14%] size-32 rotate-12 bg-[#FB4D3D] sm:right-[5%] sm:size-40 lg:size-48"
+      />
+
+      <div
+        data-orbit
+        className="pointer-events-none absolute -right-16 bottom-[14%] size-44 rounded-full border border-[#07111F]/10 sm:right-[5%] sm:size-64"
+      >
+        <span className="absolute left-1/2 top-0 size-4 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#03CEA4]" />
+      </div>
+
+
+      {/* MAIN CAMPAIGN */}
+      <div className="relative z-10 mx-auto w-full max-w-[1500px] px-6 pb-24 pt-12 sm:px-10 sm:pb-28 sm:pt-16 lg:px-14 lg:pt-20">
+
+        {/* INTRO */}
         <div
           data-reveal
-          className="mt-9 h-px w-20 bg-white/[0.12]"
-        />
-
-        {/* PRICE */}
-
-        <div
-          data-reveal
-          className="mt-8"
+          className="mx-auto mb-8 max-w-[760px] text-center sm:mb-10"
         >
-          <p className="text-[9px] uppercase tracking-[0.24em] text-white/28">
-            Admission
+          <p className="text-[10px] font-bold uppercase tracking-[.3em] text-[#CA1551]">
+            A creative social experience
           </p>
+        </div>
+
+
+        {/* HERO TYPOGRAPHY */}
+        <div className="relative mx-auto max-w-[1200px] text-center">
+
+          <div className="overflow-hidden">
+            <h1
+              data-word
+              className="font-abril text-[clamp(5rem,17vw,13rem)] font-black leading-[.7] tracking-[-.065em]"
+            >
+              SIP.
+            </h1>
+          </div>
+
+          <div className="overflow-hidden">
+            <h2
+              data-word
+              className="font-abril text-[clamp(5rem,17vw,13rem)] font-black leading-[.7] tracking-[-.065em] text-[#FB4D3D]"
+            >
+              PAINT.
+            </h2>
+          </div>
+
+          <div className="overflow-hidden pb-5">
+            <h2
+              data-word
+              className="font-abril text-[clamp(4.3rem,14vw,11rem)] font-black leading-[.78] tracking-[-.06em] text-[#03CEA4]"
+            >
+              CONNECT.
+            </h2>
+          </div>
+
+
+          {/* TICKET */}
+          <div
+            data-ticket
+            className="relative z-20 mx-auto -mt-1 w-[min(88%,350px)] rotate-[-3deg] bg-[#EAC435] px-6 py-6 shadow-[10px_12px_0_rgba(7,17,31,.12)] sm:absolute sm:-bottom-16 sm:right-[2%] sm:mt-0 sm:w-[310px] lg:right-[5%]"
+          >
+            {/* ticket cuts */}
+            <span className="absolute -left-3 top-1/2 size-6 -translate-y-1/2 rounded-full bg-[#F2EEE3]" />
+            <span className="absolute -right-3 top-1/2 size-6 -translate-y-1/2 rounded-full bg-[#F2EEE3]" />
+
+            <div className="border-b border-[#07111F]/15 pb-4">
+              <p className="text-[8px] font-bold uppercase tracking-[.25em] text-[#07111F]/55">
+                Admission
+              </p>
+
+              <p className="mt-1 font-abril text-5xl tracking-[-.045em]">
+                ₦20,000
+              </p>
+
+              <p className="mt-1 text-[9px] font-semibold uppercase tracking-[.18em] text-[#07111F]/50">
+                Per guest
+              </p>
+            </div>
+
+            <div className="pt-4">
+              <p className="text-[9px] font-black uppercase tracking-[.17em] text-[#CA1551]">
+                Early Explorer Offer
+              </p>
+
+              <p className="mt-1 text-sm font-bold">
+                First 20 guests — ₦16,000
+              </p>
+
+              <p className="mt-1 text-[9px] text-[#07111F]/50">
+                20% off admission
+              </p>
+            </div>
+          </div>
+
+        </div>
+
+
+        {/* EXPERIENCE COPY */}
+        <div className="mx-auto mt-12 max-w-[620px] text-center sm:mt-24 lg:mt-28">
 
           <p
-            className="
-              mt-2
-              font-abril
-              text-[clamp(3.1rem,5vw,4.8rem)]
-              font-normal
-              tracking-[-0.045em]
-              text-white
-            "
+            data-reveal
+            className="text-[15px] font-medium leading-7 text-[#07111F]/65 sm:text-base sm:leading-8"
           >
-            ₦20,000
+            An evening to paint without pressure, sip something good,
+            meet people and enjoy creativity for what it is — an experience.
           </p>
 
-          <p className="mt-1 text-[10px] tracking-wide text-white/25">
-            per guest
-          </p>
-        </div>
 
-        {/* DISCOUNT */}
-
-        <div
-          data-reveal
-          className="
-            mt-7
-            rounded-full
-            border
-            border-[#EAC435]/25
-            bg-[#EAC435]/[0.06]
-            px-6
-            py-3
-          "
-        >
-          <p className="text-[10px] font-medium tracking-[0.13em] text-[#EAC435]">
-            First 20 guests receive 20% off
-            <span className="mx-2 text-white/20">
-              •
-            </span>
-            ₦16,000
-          </p>
-        </div>
-
-        {/* INCLUSIONS */}
-
-        <div
-          data-reveal
-          className="
-            mt-9
-            flex
-            flex-wrap
-            items-center
-            justify-center
-            gap-x-8
-            gap-y-4
-          "
-        >
-          <Inclusion
-            icon={<Palette className="size-3.5" />}
-            text="Guided painting"
-          />
-
-          <Inclusion
-            icon={<GlassWater className="size-3.5" />}
-            text="Drinks included"
-          />
-
-          <Inclusion
-            icon={<UtensilsCrossed className="size-3.5" />}
-            text="Chops included"
-          />
-        </div>
-
-        {/* CTA */}
-
-        <div
-          data-reveal
-          className="relative mt-10"
-        >
-          <span
-            data-ticket-ring
-            className="pointer-events-none absolute inset-0 rounded-full border border-[#03CEA4]/35"
-          />
-
-          <Link
-            href="/events/sip-and-paint"
-            className="
-              group
-              relative
-              inline-flex
-              min-h-14
-              items-center
-              justify-center
-              gap-3
-              rounded-full
-              border
-              border-[#03CEA4]/30
-              bg-[#03CEA4]
-              px-9
-              text-[9px]
-              font-medium
-              uppercase
-              tracking-[0.18em]
-              text-[#07111f]
-              transition-all
-              duration-300
-              hover:bg-white
-            "
+          {/* INCLUSIONS */}
+          <div
+            data-reveal
+            className="mt-7 flex flex-wrap items-center justify-center gap-x-7 gap-y-4"
           >
-            <Ticket className="size-3.5" />
+            <Inclusion
+              icon={<Palette className="size-3.5" />}
+              text="Guided painting"
+            />
 
-            Reserve Your Seat
+            <Inclusion
+              icon={<GlassWater className="size-3.5" />}
+              text="Drinks"
+            />
 
-            <ArrowUpRight className="size-3 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1" />
-          </Link>
+            <Inclusion
+              icon={<UtensilsCrossed className="size-3.5" />}
+              text="Chops"
+            />
+          </div>
+
+
+          {/* CTA */}
+          <div data-reveal className="mt-9">
+            <Link
+              href="/events/sip-and-paint"
+              className="group inline-flex min-h-14 items-center justify-center gap-3 rounded-full bg-[#07111F] px-8 text-[9px] font-bold uppercase tracking-[.2em] text-white transition-all duration-300 hover:-translate-y-1 hover:bg-[#FB4D3D]"
+            >
+              <Ticket className="size-3.5" />
+
+              Reserve Your Seat
+
+              <ArrowUpRight className="size-3.5 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1" />
+            </Link>
+
+            <p className="mt-4 text-[8px] font-semibold uppercase tracking-[.22em] text-[#07111F]/35">
+              Limited spaces available
+            </p>
+          </div>
+
         </div>
 
-        <p
-          data-reveal
-          className="mt-4 text-[8px] uppercase tracking-[0.22em] text-white/20"
-        >
-          Limited spaces available
-        </p>
       </div>
 
-      {/* =========================================================
-          BOTTOM SLIDING TEXT
-      ========================================================= */}
 
-      <div className="pointer-events-none absolute bottom-[6%] left-0 w-full overflow-hidden">
+      {/* BOTTOM CAMPAIGN MARQUEE */}
+      <div className="relative z-20 overflow-hidden border-y border-[#07111F]/10 bg-[#07111F] py-3">
         <div
-          data-marquee-bottom
+          data-marquee
           className="flex w-max whitespace-nowrap"
         >
-          {Array.from({ length: 6 }).map((_, index) => (
+          {Array.from({ length: 8 }).map((_, index) => (
             <div
               key={index}
-              className="flex items-center pr-14"
+              className="flex items-center"
             >
-              <span className="font-abril text-[clamp(2.2rem,4vw,4.2rem)] font-normal tracking-[-0.03em] text-[#FB4D3D]/[0.06]">
-                CREATE
+              <span className="px-5 text-[9px] font-bold uppercase tracking-[.22em] text-white">
+                Sip
               </span>
 
-              <span className="px-7 text-base text-[#03CEA4]/25">
-                •
+              <span className="text-[#EAC435]">✦</span>
+
+              <span className="px-5 text-[9px] font-bold uppercase tracking-[.22em] text-white">
+                Paint
               </span>
 
-              <span className="font-abril text-[clamp(2.2rem,4vw,4.2rem)] font-normal tracking-[-0.03em] text-white/[0.035]">
-                SIP
+              <span className="text-[#FB4D3D]">✦</span>
+
+              <span className="px-5 text-[9px] font-bold uppercase tracking-[.22em] text-white">
+                Create
               </span>
 
-              <span className="px-7 text-base text-[#EAC435]/25">
-                •
+              <span className="text-[#03CEA4]">✦</span>
+
+              <span className="px-5 text-[9px] font-bold uppercase tracking-[.22em] text-white">
+                Connect
               </span>
 
-              <span className="font-abril text-[clamp(2.2rem,4vw,4.2rem)] font-normal tracking-[-0.03em] text-[#03CEA4]/[0.055]">
-                EXPERIENCE
-              </span>
-
-              <span className="px-7 text-base text-[#FB4D3D]/25">
-                •
-              </span>
+              <span className="mr-5 text-[#EAC435]">✦</span>
             </div>
           ))}
         </div>
       </div>
 
-      {/* FRAME */}
-
-      <div className="pointer-events-none absolute inset-6 border border-white/[0.04] sm:inset-8 lg:inset-10" />
     </section>
   );
 }
+
 
 function Inclusion({
   icon,
@@ -401,11 +345,11 @@ function Inclusion({
 }) {
   return (
     <div className="flex items-center gap-2">
-      <span className="text-[#EAC435]/75">
+      <span className="text-[#CA1551]">
         {icon}
       </span>
 
-      <span className="text-[9px] font-normal uppercase tracking-[0.15em] text-white/38">
+      <span className="text-[9px] font-bold uppercase tracking-[.16em] text-[#07111F]/55">
         {text}
       </span>
     </div>

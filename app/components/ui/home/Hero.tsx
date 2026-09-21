@@ -1,502 +1,543 @@
 "use client";
 
 import { useLayoutEffect, useRef } from "react";
-import Image from "next/image";
 import gsap from "gsap";
-
 import Navbar from "../layout/Navbar";
 
 export default function Hero() {
-  const heroRef = useRef<HTMLElement>(null);
+  const heroRef = useRef<HTMLElement | null>(null);
 
   useLayoutEffect(() => {
     const hero = heroRef.current;
-
     if (!hero) return;
 
-    const context = gsap.context(() => {
-      const timeline = gsap.timeline({
-        defaults: {
-          ease: "power3.out",
-        },
+    const ctx = gsap.context(() => {
+      /* =========================
+         HERO ENTRANCE
+      ========================= */
+
+      const tl = gsap.timeline({
+        defaults: { ease: "power3.out" },
       });
 
-      /*
-       * IMAGE ENTRANCE
-       */
-      timeline.fromTo(
-        "[data-hero-image]",
-        {
-          scale: 1.08,
-          autoAlpha: 0,
-        },
-        {
-          scale: 1,
-          autoAlpha: 1,
-          duration: 1.6,
-          ease: "power2.out",
-        },
-      );
-
-      /*
-       * IDEAS
-       */
-      timeline.fromTo(
-        "[data-hero-word='ideas']",
-        {
-          yPercent: 120,
-          autoAlpha: 0,
-        },
-        {
-          yPercent: 0,
-          autoAlpha: 1,
-          duration: 1,
-        },
-        "-=1.05",
-      );
-
-      /*
-       * WORTH
-       */
-      timeline.fromTo(
-        "[data-hero-word='worth']",
-        {
-          scale: 0.88,
-          rotate: -3,
-          autoAlpha: 0,
-        },
-        {
-          scale: 1,
-          rotate: 0,
-          autoAlpha: 1,
-          duration: 1.05,
-        },
-        "-=0.65",
-      );
-
-      /*
-       * BUILDING
-       */
-      timeline.fromTo(
-        "[data-hero-word='building']",
-        {
-          yPercent: -100,
-          autoAlpha: 0,
-        },
-        {
-          yPercent: 0,
-          autoAlpha: 1,
-          duration: 1,
-        },
-        "-=0.7",
-      );
-
-      /*
-       * CAPTION
-       */
-      timeline.fromTo(
-        "[data-hero-caption]",
-        {
-          y: 18,
-          autoAlpha: 0,
-        },
+      tl.fromTo(
+        "[data-hero-word]",
+        { y: 45, autoAlpha: 0 },
         {
           y: 0,
           autoAlpha: 1,
-          duration: 0.7,
+          duration: 0.9,
+          stagger: 0.12,
         },
-        "-=0.35",
-      );
+      )
+        .fromTo(
+          "[data-hero-caption]",
+          { y: 12, autoAlpha: 0 },
+          {
+            y: 0,
+            autoAlpha: 1,
+            duration: 0.6,
+          },
+          "-=0.35",
+        )
+        .fromTo(
+          "[data-scroll-label]",
+          { autoAlpha: 0 },
+          {
+            autoAlpha: 1,
+            duration: 0.5,
+          },
+          "-=0.2",
+        );
 
-      /*
-       * SCROLL LABEL
-       */
-      timeline.fromTo(
-        "[data-scroll-label]",
+
+      /* =========================
+         BACKGROUND ENTRANCE
+      ========================= */
+
+      gsap.fromTo(
+        "[data-idea-object]",
         {
           autoAlpha: 0,
+          scale: 0.75,
         },
         {
           autoAlpha: 1,
-          duration: 0.7,
+          scale: 1,
+          duration: 1.8,
+          stagger: 0.08,
+          ease: "power3.out",
+          delay: 0.35,
         },
-        "-=0.25",
       );
 
-      /*
-       * YELLOW GLOW
-       */
-      gsap.to("[data-worth-glow]", {
-        scale: 1.12,
-        opacity: 0.8,
-        duration: 3.2,
-        ease: "sine.inOut",
+
+      /* =========================
+         FLOATING OBJECTS
+      ========================= */
+
+      gsap.utils
+        .toArray<HTMLElement>("[data-float]")
+        .forEach((element, index) => {
+          gsap.to(element, {
+            y: index % 2 === 0 ? -16 : 16,
+            x: index % 3 === 0 ? 10 : -8,
+            rotate: index % 2 === 0 ? 5 : -5,
+            duration: 5 + index * 0.7,
+            repeat: -1,
+            yoyo: true,
+            ease: "sine.inOut",
+          });
+        });
+
+
+      /* =========================
+         IDEA ORBITS
+      ========================= */
+
+      gsap.to("[data-orbit-one]", {
+        rotate: 360,
+        duration: 35,
         repeat: -1,
-        yoyo: true,
+        ease: "none",
       });
 
-      /*
-       * SLOW CINEMATIC IMAGE MOTION
-       */
-      gsap.to("[data-hero-image]", {
-        scale: 1.035,
-        duration: 7,
-        ease: "sine.inOut",
+      gsap.to("[data-orbit-two]", {
+        rotate: -360,
+        duration: 48,
+        repeat: -1,
+        ease: "none",
+      });
+
+
+      /* =========================
+         THINKING NODES
+      ========================= */
+
+      gsap.utils
+        .toArray<HTMLElement>("[data-node]")
+        .forEach((node, index) => {
+          gsap.to(node, {
+            scale: 1.8,
+            opacity: 0.18,
+            duration: 1.8 + index * 0.25,
+            repeat: -1,
+            yoyo: true,
+            ease: "sine.inOut",
+          });
+        });
+
+
+      /* =========================
+         DRAWING LINES
+      ========================= */
+
+      gsap.utils
+        .toArray<HTMLElement>("[data-line]")
+        .forEach((line, index) => {
+          gsap.fromTo(
+            line,
+            {
+              scaleX: 0.15,
+              opacity: 0.03,
+            },
+            {
+              scaleX: 1,
+              opacity: 0.12,
+              duration: 3 + index * 0.4,
+              repeat: -1,
+              yoyo: true,
+              ease: "sine.inOut",
+              transformOrigin: "left center",
+            },
+          );
+        });
+
+
+      /* =========================
+         FORMING SQUARE
+      ========================= */
+
+      gsap.to("[data-forming-square]", {
+        rotate: 360,
+        duration: 45,
+        repeat: -1,
+        ease: "none",
+      });
+
+
+      /* =========================
+         SMALL IDEA SPARK
+      ========================= */
+
+      gsap.to("[data-spark]", {
+        scale: 1.35,
+        opacity: 0.55,
+        duration: 2,
         repeat: -1,
         yoyo: true,
+        stagger: {
+          each: 0.3,
+          repeat: -1,
+        },
+        ease: "sine.inOut",
       });
+
+
+      /* =========================
+         MOUSE PARALLAX
+      ========================= */
+
+      const layers = gsap.utils.toArray<HTMLElement>(
+        "[data-parallax]",
+      );
+
+      const handleMouseMove = (
+        event: MouseEvent,
+      ) => {
+        const x =
+          event.clientX / window.innerWidth - 0.5;
+
+        const y =
+          event.clientY / window.innerHeight - 0.5;
+
+        layers.forEach((layer, index) => {
+          const strength = (index + 1) * 5;
+
+          gsap.to(layer, {
+            x: x * strength,
+            y: y * strength,
+            duration: 1.4,
+            ease: "power2.out",
+            overwrite: "auto",
+          });
+        });
+      };
+
+      window.addEventListener(
+        "mousemove",
+        handleMouseMove,
+      );
+
+      return () => {
+        window.removeEventListener(
+          "mousemove",
+          handleMouseMove,
+        );
+      };
     }, hero);
 
-    return () => {
-      context.revert();
-    };
+    return () => ctx.revert();
   }, []);
+
 
   return (
     <section
       ref={heroRef}
       id="home"
-      className="
-        relative
-        flex
-        h-screen
-        min-h-[700px]
-        w-full
-        items-center
-        justify-center
-        overflow-hidden
-        bg-[#07111f]
-        px-5
-        py-24
-        text-white
-        sm:px-8
-        md:px-12
-        lg:px-10
-      "
+      className="relative flex min-h-[100svh] w-full items-center justify-center overflow-hidden bg-[#07111F] px-5 text-white sm:px-8 md:px-12 lg:px-16"
     >
       <Navbar />
 
-      {/* =========================================================
-          HERO IMAGE
-      ========================================================= */}
+
+      {/* ==================================
+          BASE
+      ================================== */}
+
+      <div className="pointer-events-none absolute inset-0 bg-[#07111F]" />
+
+
+      {/* ==================================
+          VERY FAINT THINKING GRID
+      ================================== */}
 
       <div
-        data-hero-image
-        className="pointer-events-none absolute inset-0 z-0"
-      >
-        <Image
-          src="/tce-team-hero.png"
-          alt="Creative team collaborating"
-          fill
-          priority
-          quality={100}
-          sizes="100vw"
-          className="
-            object-cover
-            object-center
-          "
-        />
+        className="
+          pointer-events-none
+          absolute
+          inset-0
+          opacity-[0.035]
+          [background-image:linear-gradient(rgba(255,255,255,.2)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.2)_1px,transparent_1px)]
+          [background-size:70px_70px]
+        "
+      />
+
+
+      {/* ==================================
+          SOFT BRAND ATMOSPHERE
+      ================================== */}
+
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+
+        <div className="absolute -left-40 top-1/3 size-[25rem] rounded-full bg-[#03CEA4]/[0.05] blur-[150px]" />
+
+        <div className="absolute -right-40 top-1/4 size-[25rem] rounded-full bg-[#FB4D3D]/[0.05] blur-[150px]" />
+
+        <div className="absolute -bottom-52 left-1/2 size-[30rem] -translate-x-1/2 rounded-full bg-[#EAC435]/[0.05] blur-[160px]" />
+
       </div>
 
-      {/* =========================================================
-          MAIN NAVY OVERLAY
-      ========================================================= */}
+
+      {/* ==================================
+          IDEA FORMATION SYSTEM
+      ================================== */}
 
       <div
-        className="
-          pointer-events-none
-          absolute
-          inset-0
-          z-[1]
-          bg-[#07111f]/35
-        "
-      />
+        data-parallax
+        className="pointer-events-none absolute inset-0"
+      >
 
-      {/* =========================================================
-          HORIZONTAL GRADIENT
-      ========================================================= */}
-
-      <div
-        className="
-          pointer-events-none
-          absolute
-          inset-0
-          z-[2]
-          bg-gradient-to-r
-          from-[#07111f]/85
-          via-[#07111f]/45
-          to-[#07111f]/20
-        "
-      />
-
-      {/* =========================================================
-          VERTICAL GRADIENT
-      ========================================================= */}
-
-      <div
-        className="
-          pointer-events-none
-          absolute
-          inset-0
-          z-[2]
-          bg-gradient-to-b
-          from-[#07111f]/30
-          via-transparent
-          to-[#07111f]/75
-        "
-      />
-
-      {/* =========================================================
-          AMBIENT COLOR GLOWS
-      ========================================================= */}
-
-      <div className="pointer-events-none absolute inset-0 z-[3]">
-        {/* GREEN */}
+        {/* LEFT THOUGHT CLUSTER */}
 
         <div
-          className="
-            absolute
-            -left-52
-            top-1/3
-            size-[32rem]
-            rounded-full
-            bg-[#03CEA4]/10
-            blur-[180px]
-          "
-        />
+          data-idea-object
+          data-float
+          className="absolute left-[5%] top-[26%] hidden size-[190px] opacity-50 sm:block lg:left-[8%] lg:size-[240px]"
+        >
 
-        {/* RED */}
+          <div
+            data-orbit-one
+            className="absolute inset-0 rounded-full border border-white/[0.07]"
+          >
+
+            <span className="absolute left-1/2 top-0 size-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#03CEA4]/60" />
+
+          </div>
+
+
+          <div className="absolute left-1/2 top-1/2 size-[55%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#03CEA4]/10" />
+
+
+          <span
+            data-node
+            className="absolute left-[28%] top-[34%] size-2 rounded-full bg-[#EAC435]/70"
+          />
+
+          <span
+            data-node
+            className="absolute right-[22%] top-[45%] size-1.5 rounded-full bg-[#03CEA4]/70"
+          />
+
+          <span
+            data-node
+            className="absolute bottom-[20%] left-[45%] size-1 rounded-full bg-[#FB4D3D]/70"
+          />
+
+
+          <span
+            data-line
+            className="absolute left-[30%] top-[36%] h-px w-[45%] rotate-[18deg] bg-white"
+          />
+
+          <span
+            data-line
+            className="absolute left-[43%] top-[53%] h-px w-[30%] rotate-[68deg] bg-white"
+          />
+
+        </div>
+
+
+        {/* RIGHT FORMING OBJECT */}
 
         <div
-          className="
-            absolute
-            -right-52
-            top-1/4
-            size-[30rem]
-            rounded-full
-            bg-[#FB4D3D]/10
-            blur-[180px]
-          "
-        />
+          data-idea-object
+          data-float
+          className="absolute right-[5%] top-[20%] hidden size-[210px] opacity-50 sm:block lg:right-[8%] lg:size-[280px]"
+        >
 
-        {/* YELLOW */}
+          <div
+            data-forming-square
+            className="absolute left-1/2 top-1/2 size-[55%] -translate-x-1/2 -translate-y-1/2 rotate-12 border border-[#FB4D3D]/15"
+          />
+
+          <div
+            data-orbit-two
+            className="absolute inset-[8%] rounded-full border border-dashed border-white/[0.07]"
+          >
+
+            <span className="absolute bottom-[8%] right-[10%] size-2 rounded-full bg-[#FB4D3D]/60" />
+
+          </div>
+
+          <span className="absolute left-[30%] top-[24%] text-lg font-light text-[#EAC435]/25">
+            +
+          </span>
+
+          <span className="absolute bottom-[23%] right-[23%] text-lg font-light text-[#03CEA4]/25">
+            ×
+          </span>
+
+        </div>
+
+
+        {/* LOWER LEFT SKETCH */}
 
         <div
-          data-worth-glow
-          className="
-            absolute
-            bottom-[-14rem]
-            left-1/2
-            size-[36rem]
-            -translate-x-1/2
-            rounded-full
-            bg-[#EAC435]/15
-            opacity-50
-            blur-[180px]
-          "
-        />
+          data-idea-object
+          data-float
+          className="absolute bottom-[17%] left-[9%] hidden h-[120px] w-[170px] opacity-40 md:block"
+        >
+
+          <span className="absolute left-0 top-3 h-px w-24 rotate-[-12deg] bg-[#EAC435]/20" />
+
+          <span className="absolute left-12 top-12 h-px w-28 rotate-[8deg] bg-white/10" />
+
+          <span className="absolute left-5 top-[75px] h-px w-20 rotate-[-20deg] bg-[#03CEA4]/20" />
+
+          <span
+            data-spark
+            className="absolute right-5 top-2 size-2 rounded-full bg-[#EAC435]"
+          />
+
+          <span
+            data-spark
+            className="absolute bottom-5 left-8 size-1.5 rounded-full bg-[#03CEA4]"
+          />
+
+        </div>
+
+
+        {/* LOWER RIGHT MINI IDEA */}
+
+        <div
+          data-idea-object
+          data-float
+          className="absolute bottom-[19%] right-[11%] hidden size-28 opacity-40 md:block"
+        >
+
+          <span className="absolute inset-0 rounded-full border border-white/[0.08]" />
+
+          <span className="absolute left-1/2 top-1/2 h-[140%] w-px -translate-x-1/2 -translate-y-1/2 rotate-45 bg-white/[0.06]" />
+
+          <span className="absolute left-1/2 top-1/2 h-px w-[140%] -translate-x-1/2 -translate-y-1/2 rotate-45 bg-white/[0.06]" />
+
+          <span
+            data-spark
+            className="absolute right-0 top-1/2 size-2 -translate-y-1/2 rounded-full bg-[#FB4D3D]"
+          />
+
+        </div>
+
       </div>
 
-      {/* =========================================================
-          DECORATIVE LINES
-      ========================================================= */}
+
+      {/* ==================================
+          CENTER IDEA HALO
+      ================================== */}
 
       <div
-        className="
-          pointer-events-none
-          absolute
-          inset-x-0
-          top-1/2
-          z-[4]
-          h-px
-          bg-white/[0.05]
-        "
-      />
-
-      <div
-        className="
-          pointer-events-none
-          absolute
-          left-1/2
-          top-0
-          z-[4]
-          h-full
-          w-px
-          -translate-x-1/2
-          bg-white/[0.04]
-        "
-      />
-
-      {/* =========================================================
-          HERO CONTENT
-      ========================================================= */}
-
-      <div
-  className="
-    relative
-    z-10
-    mx-auto
-    flex
-    w-full
-    max-w-7xl
-    -translate-y-[3vh]
-    flex-col
-    items-center
-    justify-center
-    text-center
-  "
->
-  <div className="w-full max-w-6xl">
-    <h1
-      className="
-        font-bold
-        text-[clamp(4rem,9.5vw,10.5rem)]
-        leading-[0.78]
-        tracking-[-0.06em]
-        drop-shadow-[0_10px_40px_rgba(0,0,0,0.55)]
-      "
-    >
-      {/* IDEAS */}
-      <span className="block overflow-hidden pb-[0.04em]">
-        <span
-          data-hero-word="ideas"
-          className="block"
-        >
-          Ideas
-        </span>
-      </span>
-
-      {/* WORTH */}
-      <span
-        className="
-          relative
-          block
-          overflow-visible
-          py-[0.08em]
-        "
+        data-parallax
+        className="pointer-events-none absolute left-1/2 top-1/2 size-[320px] -translate-x-1/2 -translate-y-1/2 sm:size-[480px] lg:size-[650px]"
       >
-        <span
-          data-hero-word="worth"
-          className="
-            relative
-            z-10
-            block
-            scale-[1.04]
-            text-[#EAC435]
-            sm:scale-[1.08]
-          "
-        >
-          Worth
-        </span>
 
-        <span
-          className="
-            pointer-events-none
-            absolute
-            left-1/2
-            top-1/2
-            -z-0
-            h-[50%]
-            w-[70%]
-            -translate-x-1/2
-            -translate-y-1/2
-            rounded-full
-            bg-[#EAC435]/10
-            blur-3xl
-          "
-        />
-      </span>
+        <div className="absolute inset-0 rounded-full border border-white/[0.025]" />
 
-      {/* BUILDING */}
-      <span className="block overflow-hidden pt-[0.16em] pb-[0.08em]">
-        <span
-          data-hero-word="building"
-          className="
-            relative
-            z-10
-            block
-            text-[#FB4D3D]
-          "
-        >
-          Building.
-        </span>
-      </span>
-    </h1>
+        <div className="absolute inset-[18%] rounded-full border border-dashed border-white/[0.025]" />
 
-    <p
-      data-hero-caption
-      className="
-        mx-auto
-        mt-7
-        max-w-3xl
-        text-[10px]
-        font-medium
-        uppercase
-        tracking-[0.32em]
-        text-white/70
-        sm:text-xs
-        sm:tracking-[0.48em]
-      "
-    >
-      Branding
+        <div className="absolute left-1/2 top-1/2 size-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#EAC435]/10 blur-sm" />
 
-      <span className="mx-3 text-[#03CEA4]">•</span>
+      </div>
 
-      Technology
 
-      <span className="mx-3 text-[#FB4D3D]">•</span>
+      {/* ==================================
+          MAIN CONTENT
+      ================================== */}
 
-      Creative Production
-    </p>
-  </div>
-</div>
-      {/* =========================================================
-          SCROLL LABEL
-      ========================================================= */}
+      <div className="relative z-10 mx-auto flex w-full max-w-[1200px] items-center justify-center text-center">
+
+        <div className="w-full">
+
+          <h1 className="mx-auto max-w-[1050px] text-center font-black text-[clamp(3.5rem,14vw,5rem)] leading-[0.9] tracking-[-0.045em] sm:text-[clamp(4.5rem,10vw,6.5rem)] sm:leading-[0.88] md:text-[clamp(5rem,8.5vw,7.2rem)] lg:text-[clamp(5.5rem,7.2vw,8rem)]">
+
+            <span className="block overflow-hidden pb-[0.08em]">
+              <span
+                data-hero-word
+                className="block text-white"
+              >
+                Ideas
+              </span>
+            </span>
+
+            <span className="block overflow-hidden pb-[0.08em]">
+              <span
+                data-hero-word
+                className="block text-[#EAC435]"
+              >
+                Worth
+              </span>
+            </span>
+
+            <span className="block overflow-hidden pb-[0.1em]">
+              <span
+                data-hero-word
+                className="block text-[#FB4D3D]"
+              >
+                Building.
+              </span>
+            </span>
+
+          </h1>
+
+
+          {/* SUBTEXT */}
+
+          <div
+            data-hero-caption
+            className="mx-auto mt-6 flex max-w-2xl flex-wrap items-center justify-center gap-x-3 gap-y-2 sm:mt-8 sm:gap-x-4"
+          >
+
+            <span className="text-[10px] font-normal uppercase tracking-[0.22em] text-white/80 sm:text-xs sm:tracking-[0.28em]">
+              Branding
+            </span>
+
+            <span className="size-1 rounded-full bg-[#03CEA4]" />
+
+            <span className="text-[10px] font-normal uppercase tracking-[0.22em] text-white/80 sm:text-xs sm:tracking-[0.28em]">
+              Technology
+            </span>
+
+            <span className="size-1 rounded-full bg-[#EAC435]" />
+
+            <span className="text-[10px] font-normal uppercase tracking-[0.22em] text-white/80 sm:text-xs sm:tracking-[0.28em]">
+              Creative Production
+            </span>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      {/* ==================================
+          SCROLL
+      ================================== */}
 
       <div
         data-scroll-label
-        className="
-          absolute
-          bottom-7
-          left-1/2
-          z-20
-          -translate-x-1/2
-          sm:bottom-10
-        "
+        className="absolute bottom-6 left-1/2 z-20 -translate-x-1/2 sm:bottom-8"
       >
-        <p
-          className="
-            text-[9px]
-            font-medium
-            uppercase
-            tracking-[0.5em]
-            text-white/45
-          "
-        >
+
+        <p className="text-[9px] font-normal uppercase tracking-[0.4em] text-white/55">
           Scroll
         </p>
 
-        <div
-          className="
-            mx-auto
-            mt-3
-            h-10
-            w-px
-            overflow-hidden
-            bg-white/15
-          "
-        >
-          <div
-            className="
-              h-4
-              w-full
-              animate-[heroScrollLine_1.8s_ease-in-out_infinite]
-              bg-[#03CEA4]
-            "
-          />
+        <div className="mx-auto mt-3 h-8 w-px overflow-hidden bg-white/15">
+          <div className="h-3 w-full bg-[#03CEA4]" />
         </div>
+
       </div>
+
+
+      {/* EDGE DETAILS */}
+
+      <p className="absolute bottom-8 left-8 hidden text-[8px] uppercase tracking-[.24em] text-white/20 lg:block">
+        Explore / Create / Build
+      </p>
+
+      <p className="absolute bottom-8 right-8 hidden text-[8px] uppercase tracking-[.24em] text-white/20 lg:block">
+        TCE / 2026
+      </p>
 
     </section>
   );

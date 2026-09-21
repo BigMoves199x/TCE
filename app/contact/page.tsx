@@ -1,173 +1,209 @@
 import Link from "next/link";
-import {
-  ArrowLeft,
-  ArrowUpRight,
-  BriefcaseBusiness,
-  CheckCircle2,
-  Clock3,
-  Lightbulb,
-  ShieldCheck,
-  Sparkles,
-} from "lucide-react";
-
+import { ArrowLeft, ArrowDown } from "lucide-react";
 import StartProjectForm from "@/app/components/ui/project/StartProjectForm";
 
 export const metadata = {
   title: "Start a Project | The Creative Explorer",
   description:
-    "Tell The Creative Explorer about your branding, technology or business project.",
+    "Bring your idea to The Creative Explorer. Let's explore what it could become.",
 };
-
-const projectSteps = [
-  {
-    icon: Lightbulb,
-    title: "Tell us the idea",
-    description:
-      "Share what you are building, what you need and where you want the project to go.",
-  },
-  {
-    icon: BriefcaseBusiness,
-    title: "We shape the direction",
-    description:
-      "We review the brief, clarify priorities and recommend the right TCE division or combination.",
-  },
-  {
-    icon: Sparkles,
-    title: "We build with intention",
-    description:
-      "Once the scope is approved, we move from strategy into design, development and delivery.",
-  },
-];
 
 export default function StartProjectPage() {
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#07111f] px-5 py-8 text-white sm:px-8 lg:px-10">
-      {/* Ambient background */}
-      <div className="pointer-events-none absolute -left-40 top-24 size-[34rem] rounded-full bg-[#03CEA4]/10 blur-[170px]" />
+    <main className="min-h-screen overflow-hidden bg-[#07111F] text-[#F4F1EA]">
 
-      <div className="pointer-events-none absolute -right-40 bottom-10 size-[34rem] rounded-full bg-[#FB4D3D]/10 blur-[170px]" />
+      {/* NAV */}
+      <header className="mx-auto flex w-full max-w-[1380px] items-center justify-between px-5 py-6 sm:px-8 md:px-12 lg:px-16">
+        <Link
+          href="/"
+          className="group inline-flex items-center gap-2 text-[10px] font-medium uppercase tracking-[.2em] text-[#8994A2] transition-colors duration-300 hover:text-white"
+        >
+          <ArrowLeft className="size-3.5 transition-transform duration-300 group-hover:-translate-x-1" />
+          Back home
+        </Link>
 
-      <div className="pointer-events-none absolute -bottom-60 left-1/2 size-[38rem] -translate-x-1/2 rounded-full bg-[#EAC435]/8 blur-[180px]" />
+        <Link
+          href="/"
+          aria-label="The Creative Explorer"
+          className="font-bebit text-[28px] leading-none"
+        >
+          <span className="text-[#EAC435]">T</span>
+          <span className="text-[#03CEA4]">C</span>
+          <span className="text-[#FB4D3D]">E</span>
+        </Link>
+      </header>
 
-      <div className="pointer-events-none absolute inset-0 opacity-[0.025] [background-image:radial-gradient(circle_at_center,white_0.7px,transparent_0.8px)] [background-size:6px_6px]" />
 
-      <div className="relative mx-auto max-w-7xl">
-        <header className="flex items-center justify-between gap-5">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 text-sm text-white/45 transition hover:text-white"
+      {/* INTRO */}
+      <section className="mx-auto w-full max-w-[1380px] px-5 pb-20 pt-20 text-center sm:px-8 sm:pb-24 sm:pt-24 md:px-12 lg:px-16 lg:pb-28 lg:pt-28">
+        <div className="mx-auto max-w-[780px]">
+
+          <p className="text-[10px] font-semibold uppercase tracking-[.24em] text-[#EAC435] sm:text-[11px]">
+            Start a project
+          </p>
+
+          <h1 className="mt-5 font-abril text-[clamp(2.8rem,6vw,5rem)] leading-[1] tracking-[-.035em]">
+            Bring us the idea.
+            <span className="block text-[#03CEA4]">
+              Let&apos;s explore it.
+            </span>
+          </h1>
+
+          <p className="mx-auto mt-7 max-w-[590px] text-[15px] leading-7 text-[#AAB3BE] sm:text-base sm:leading-8">
+            You don&apos;t need to have everything figured out. Tell us what
+            you&apos;re thinking, what you&apos;re trying to create, or where
+            you need help moving forward.
+          </p>
+
+          <a
+            href="#project-form"
+            aria-label="Continue to project form"
+            className="group mx-auto mt-10 inline-flex size-11 items-center justify-center rounded-full border border-white/[.12] text-[#AAB3BE] transition-all duration-300 hover:border-[#03CEA4]/50 hover:text-[#03CEA4]"
           >
-            <ArrowLeft className="size-4" />
-            Back home
-          </Link>
+            <ArrowDown className="size-4 transition-transform duration-300 group-hover:translate-y-1" />
+          </a>
 
-          <div className="flex items-center gap-2 text-xs text-white/35">
-            <ShieldCheck className="size-3.5 text-[#03CEA4]" />
-            Private project enquiry
-          </div>
-        </header>
+        </div>
+      </section>
 
-        <div className="grid min-h-[calc(100vh-72px)] items-start gap-12 py-12 lg:grid-cols-[minmax(0,0.88fr)_minmax(560px,0.9fr)] lg:items-center lg:gap-16">
-          {/* Left content */}
-          <section>
-            <div className="inline-flex items-center gap-3">
-              <span className="h-px w-10 bg-[#03CEA4]" />
 
-              <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-[#03CEA4] sm:text-xs">
-                Start a project
+      {/* QUIET TRANSITION */}
+      <section className="border-y border-white/[.08]">
+        <div className="mx-auto max-w-[900px] px-5 py-6 text-center sm:px-8">
+
+          <p className="text-[9px] font-medium uppercase tracking-[.2em] text-[#697583] sm:text-[10px]">
+            An idea can start anywhere
+            <span className="mx-3 text-white/15">•</span>
+            <span className="text-[#EAC435]">Explore</span>
+            <span className="mx-3 text-white/15">•</span>
+            <span className="text-[#03CEA4]">Create</span>
+            <span className="mx-3 text-white/15">•</span>
+            <span className="text-[#FB4D3D]">Build</span>
+          </p>
+
+        </div>
+      </section>
+
+
+      {/* WELCOME */}
+      <section className="mx-auto w-full max-w-[1380px] px-5 py-20 text-center sm:px-8 sm:py-24 md:px-12 lg:px-16">
+        <div className="mx-auto max-w-[680px]">
+
+          <p className="text-[10px] font-semibold uppercase tracking-[.22em] text-[#FB4D3D]">
+            Your starting point
+          </p>
+
+          <h2 className="mt-5 font-abril text-[2.1rem] leading-[1.12] tracking-[-.025em] sm:text-[2.6rem] lg:text-[3rem]">
+            Start with what you know.
+          </h2>
+
+          <div className="mx-auto mt-6 h-px w-12 bg-[#FB4D3D]/60" />
+
+          <p className="mx-auto mt-6 max-w-[590px] text-[15px] leading-7 text-[#AAB3BE] sm:text-base sm:leading-8">
+            A name. A sketch. A business challenge. A product idea. A project
+            already in motion. Wherever you are in the process, give us enough
+            context to understand what you&apos;re exploring.
+          </p>
+
+        </div>
+      </section>
+
+
+      {/* FORM AREA */}
+      <section
+        id="project-form"
+        className="scroll-mt-8 border-t border-white/[.08] bg-[#0A1625]"
+      >
+        <div className="mx-auto w-full max-w-[1380px] px-5 py-20 sm:px-8 sm:py-24 md:px-12 lg:px-16 lg:py-28">
+
+          <div className="mx-auto max-w-[760px]">
+
+            {/* FORM HEADING */}
+            <div className="text-center">
+
+              <p className="text-[10px] font-semibold uppercase tracking-[.22em] text-[#03CEA4]">
+                Tell us about it
               </p>
+
+              <h2 className="mt-4 font-abril text-[2.15rem] leading-[1.1] tracking-[-.025em] sm:text-[2.7rem]">
+                What are you exploring?
+              </h2>
+
+              <p className="mx-auto mt-5 max-w-[520px] text-[14px] leading-7 text-[#8E99A6] sm:text-[15px]">
+                There&apos;s no need for a perfect brief. Share what you have,
+                and we&apos;ll use it as the starting point for the
+                conversation.
+              </p>
+
             </div>
 
-            <h1 className="mt-7 max-w-3xl font-abril text-[clamp(4rem,8vw,7.5rem)] leading-[0.86] tracking-[-0.055em]">
-              Let&apos;s build
-              <span className="block text-[#EAC435]">
-                something worth
-              </span>
-              <span className="block">
-                remembering.
-              </span>
-            </h1>
 
-            <p className="mt-8 max-w-xl text-base leading-8 text-white/50 sm:text-lg">
-              Tell us about the idea, challenge or opportunity. We will review
-              your brief and recommend the best creative, technical or project
-              direction.
-            </p>
-
-            <div className="mt-10 grid gap-4 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
-              {projectSteps.map((step) => {
-                const Icon = step.icon;
-
-                return (
-                  <article
-                    key={step.title}
-                    className="rounded-[1.5rem] border border-white/[0.08] bg-white/[0.03] p-5"
-                  >
-                    <div className="grid size-10 place-items-center rounded-full bg-[#03CEA4]/10 text-[#03CEA4]">
-                      <Icon className="size-4.5" />
-                    </div>
-
-                    <h2 className="mt-4 text-sm font-semibold">
-                      {step.title}
-                    </h2>
-
-                    <p className="mt-2 text-xs leading-5 text-white/40">
-                      {step.description}
-                    </p>
-                  </article>
-                );
-              })}
-            </div>
-
-            <div className="mt-8 flex flex-wrap gap-3 text-xs text-white/40">
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.025] px-4 py-2.5">
-                <Clock3 className="size-3.5 text-[#EAC435]" />
-                Response within 1–2 business days
-              </span>
-
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.025] px-4 py-2.5">
-                <CheckCircle2 className="size-3.5 text-[#03CEA4]" />
-                No commitment required
-              </span>
-            </div>
-          </section>
-
-          {/* Form card */}
-          <section className="mx-auto w-full max-w-2xl">
-            <div className="rounded-[2rem] border border-white/10 bg-white/[0.045] p-5 shadow-[0_30px_90px_rgba(0,0,0,0.35)] backdrop-blur-3xl sm:p-8">
-              <div className="mb-7">
-                <Link
-                  href="/"
-                  aria-label="TCE home"
-                  className="inline-flex font-bebit text-4xl leading-none"
-                >
-                  <span className="text-[#EAC435]">T</span>
-                  <span className="text-[#03CEA4]">C</span>
-                  <span className="text-[#FB4D3D]">E</span>
-                </Link>
-
-                <h2 className="mt-5 text-3xl font-semibold tracking-tight">
-                  Tell us about your project
-                </h2>
-
-                <p className="mt-2 text-sm leading-7 text-white/45">
-                  The more context you provide, the better we can prepare for
-                  the first conversation.
-                </p>
-              </div>
-
-              <div className="mb-7 h-px bg-white/[0.08]" />
-
+            {/* FORM */}
+            <div className="mt-12 rounded-[1.75rem] border border-white/[.08] bg-[#07111F] p-5 sm:p-8 lg:p-10">
               <StartProjectForm />
             </div>
 
-            <p className="mt-5 text-center text-xs leading-6 text-white/25">
-              Your project information is treated as private and used only to
-              evaluate your enquiry.
+
+            {/* PRIVACY */}
+            <p className="mx-auto mt-5 max-w-[520px] text-center text-[10px] leading-5 text-[#65717F]">
+              The information you share is used only to understand your
+              enquiry and prepare for our conversation.
             </p>
-          </section>
+
+          </div>
+
         </div>
-      </div>
+      </section>
+
+
+      {/* WHAT HAPPENS NEXT */}
+      <section className="mx-auto w-full max-w-[1380px] px-5 py-20 text-center sm:px-8 sm:py-24 md:px-12 lg:px-16">
+        <div className="mx-auto max-w-[680px]">
+
+          <p className="text-[10px] font-semibold uppercase tracking-[.22em] text-[#EAC435]">
+            What happens next
+          </p>
+
+          <h2 className="mt-5 font-abril text-[2.1rem] leading-[1.12] tracking-[-.025em] sm:text-[2.6rem] lg:text-[3rem]">
+            We&apos;ll take it from there.
+          </h2>
+
+          <div className="mx-auto mt-6 h-px w-12 bg-[#EAC435]/60" />
+
+          <p className="mx-auto mt-6 max-w-[580px] text-[15px] leading-7 text-[#AAB3BE] sm:text-base sm:leading-8">
+            We&apos;ll review what you&apos;ve shared, understand where TCE can
+            add value, and reach out to continue the conversation.
+          </p>
+
+          <p className="mt-5 text-[11px] uppercase tracking-[.16em] text-[#687482]">
+            Usually within 1–2 business days
+          </p>
+
+        </div>
+      </section>
+
+
+      {/* CLOSING */}
+      <footer className="border-t border-white/[.08]">
+        <div className="mx-auto flex w-full max-w-[1380px] flex-col items-center px-5 py-10 text-center sm:px-8 md:px-12 lg:px-16">
+
+          <Link
+            href="/"
+            aria-label="The Creative Explorer"
+            className="font-bebit text-3xl leading-none"
+          >
+            <span className="text-[#EAC435]">T</span>
+            <span className="text-[#03CEA4]">C</span>
+            <span className="text-[#FB4D3D]">E</span>
+          </Link>
+
+          <p className="mt-4 text-[9px] uppercase tracking-[.22em] text-[#66717F]">
+            Explore Creativity. Build Innovation.
+          </p>
+
+        </div>
+      </footer>
+
     </main>
   );
 }

@@ -3,684 +3,791 @@
 import { useLayoutEffect, useRef } from "react";
 import gsap from "gsap";
 import { Observer } from "gsap/Observer";
-import { SplitText } from "gsap/SplitText";
 
-gsap.registerPlugin(Observer, SplitText);
+gsap.registerPlugin(Observer);
 
-/*
-|--------------------------------------------------------------------------
-| TCE SHOWCASE CONTENT
-|--------------------------------------------------------------------------
-|
-| Each slide uses one SOLID TCE color.
-|
-| No gradients.
-| No glass cards.
-| No excessive decoration.
-|
-*/
-
-const slides = [
+const stages = [
   {
-    kicker: "Ideas need more than imagination.",
-    title: "Ideas deserve direction.",
+    number: "01",
+    label: "Explore",
+    title: "What if?",
     description:
-      "We give ambitious ideas the clarity, creativity and structure they need to become something real.",
-
-    // switched from navy to TCE red
-    background: "#FB4D3D",
-    foreground: "#FFFFFF",
-    muted: "rgba(255,255,255,0.68)",
+      "Before an idea becomes something, there is curiosity — a question, a possibility, something worth following.",
     accent: "#EAC435",
-    ghost: "rgba(255,255,255,0.055)",
   },
-
   {
-    kicker: "Distinctive by intention.",
-    title: "Creativity with consequence.",
+    number: "02",
+    label: "Create",
+    title: "Give it form.",
     description:
-      "We don't create simply to make things look good. We create identities, experiences and stories designed to be remembered.",
-
-    background: "#EAC435",
-    foreground: "#07111f",
-    muted: "rgba(7,17,31,0.62)",
-    accent: "#07111f",
-    ghost: "rgba(7,17,31,0.055)",
+      "Creativity gives possibility a language — something we can begin to see, feel and understand.",
+    accent: "#FB4D3D",
   },
-
   {
-    kicker: "Beauty should perform.",
-    title: "Built to move ideas forward.",
+    number: "03",
+    label: "Build",
+    title: "Make it real.",
     description:
-      "Technology becomes meaningful when it solves a real problem. We build digital experiences where design and function move as one.",
-
-    background: "#03CEA4",
-    foreground: "#07111f",
-    muted: "rgba(7,17,31,0.60)",
-    accent: "#07111f",
-    ghost: "rgba(7,17,31,0.055)",
+      "Design, technology and structure move an idea beyond imagination and into something people can experience.",
+    accent: "#03CEA4",
   },
-
   {
-    eyebrow: "",
-    kicker: "This is where imagination becomes tangible.",
-    title: "We make ideas real.",
+    number: "04",
+    label: "Explore again",
+    title: "There is always more to discover.",
     description:
-      "Brands. Technology. Art. Products. Experiences. TCE exists to explore what an idea could become — and then build it.",
-
-    // switched from red to TCE navy
-    background: "#07111f",
-    foreground: "#FFFFFF",
-    muted: "rgba(255,255,255,0.52)",
+      "Building rarely ends the journey. Sometimes what you create reveals the next question, the next possibility and somewhere new to explore.",
     accent: "#EAC435",
-    ghost: "rgba(255,255,255,0.035)",
   },
 ];
 
 export default function ObserverShowcase() {
-  const rootRef = useRef<HTMLElement>(null);
+  const rootRef = useRef<HTMLElement | null>(null);
 
   useLayoutEffect(() => {
     const root = rootRef.current;
-
     if (!root) return;
 
-    const showcase = root;
+    const stageEls = gsap.utils.toArray<HTMLElement>(".idea-stage", root);
+    const visual = root.querySelector<HTMLElement>("[data-visual]");
+    const dot = root.querySelector<HTMLElement>("[data-dot]");
+    const ring = root.querySelector<HTMLElement>("[data-ring]");
+    const lineH = root.querySelector<HTMLElement>("[data-line-h]");
+    const lineV = root.querySelector<HTMLElement>("[data-line-v]");
+    const box = root.querySelector<HTMLElement>("[data-box]");
+    const orbit = root.querySelector<HTMLElement>("[data-orbit]");
+    const core = root.querySelector<HTMLElement>("[data-core]");
+    const loop = root.querySelector<HTMLElement>("[data-loop]");
+    const progress = gsap.utils.toArray<HTMLElement>("[data-progress]", root);
 
-    const sections = gsap.utils.toArray<HTMLElement>(
-      ".tce-showcase-slide",
-      showcase,
-    );
+    if (!stageEls.length || !visual) return;
 
-    const titleElements = gsap.utils.toArray<HTMLElement>(
-      ".tce-showcase-title",
-      showcase,
-    );
-
-    const numberElements = gsap.utils.toArray<HTMLElement>(
-      ".tce-showcase-number",
-      showcase,
-    );
-
-    const splitTitles = titleElements.map(
-      (title) =>
-        new SplitText(title, {
-          type: "words,chars",
-          wordsClass: "tce-word",
-          charsClass: "tce-char",
-        }),
-    );
-
-    let currentIndex = -1;
+    let current = -1;
     let animating = false;
-    let leavingShowcase = false;
+    let leaving = false;
+    let active = false;
+    let observer: ReturnType<typeof Observer.create> | null = null;
+    let gestureLocked = false;
+    let gestureTimer: ReturnType<typeof setTimeout> | null = null;
 
-    let observer: ReturnType<typeof Observer.create>;
+    gsap.set(stageEls, { autoAlpha: 0, y: 16 });
+    gsap.set(dot, { scale: 0, autoAlpha: 0 });
+    gsap.set(ring, { scale: 0.45, autoAlpha: 0 });
+    gsap.set(lineH, { scaleX: 0, autoAlpha: 0 });
+    gsap.set(lineV, { scaleY: 0, autoAlpha: 0 });
+    gsap.set(box, { scale: 0.78, autoAlpha: 0 });
+    gsap.set(orbit, { scale: 0.7, rotate: -18, autoAlpha: 0 });
+    gsap.set(core, { scale: 0, autoAlpha: 0 });
+    gsap.set(loop, { scale: 0.8, rotate: -20, autoAlpha: 0 });
 
-    /*
-    |--------------------------------------------------------------------------
-    | INITIAL STATE
-    |--------------------------------------------------------------------------
-    */
+    const setProgress = (index: number) => {
+      progress.forEach((item, i) => {
+        gsap.to(item, {
+          width: i === index ? 32 : 10,
+          opacity: i === index ? 1 : 0.22,
+          duration: 0.4,
+          ease: "power2.out",
+        });
+      });
+    };
 
-    gsap.set(sections, {
-      autoAlpha: 0,
-    });
+    const animateVisual = (index: number) => {
+      const tl = gsap.timeline({
+        defaults: { ease: "power3.out" },
+      });
 
-    /*
-    |--------------------------------------------------------------------------
-    | SLIDE TRANSITION
-    |--------------------------------------------------------------------------
-    */
+      if (index === 0) {
+        tl.to([box, orbit, core, loop], {
+          autoAlpha: 0,
+          duration: 0.3,
+        })
+          .to(
+            lineH,
+            {
+              scaleX: 0.65,
+              autoAlpha: 0.28,
+              duration: 0.65,
+            },
+            0,
+          )
+          .to(
+            lineV,
+            {
+              scaleY: 0.65,
+              autoAlpha: 0.28,
+              duration: 0.65,
+            },
+            0,
+          )
+          .to(
+            ring,
+            {
+              scale: 1,
+              autoAlpha: 1,
+              borderColor: "#EAC435",
+              duration: 0.7,
+            },
+            0.1,
+          )
+          .to(
+            dot,
+            {
+              scale: 1,
+              autoAlpha: 1,
+              backgroundColor: "#EAC435",
+              duration: 0.5,
+            },
+            0.22,
+          );
+      }
 
-    function goToSection(index: number, direction: 1 | -1) {
-      if (animating || index < 0 || index >= sections.length) {
+      if (index === 1) {
+        tl.to([box, loop], {
+          autoAlpha: 0,
+          duration: 0.3,
+        })
+          .to(
+            ring,
+            {
+              scale: 1.15,
+              borderColor: "#FB4D3D",
+              autoAlpha: 0.85,
+              duration: 0.7,
+            },
+            0,
+          )
+          .to(
+            orbit,
+            {
+              scale: 1,
+              rotate: 14,
+              autoAlpha: 0.55,
+              borderColor: "#FB4D3D",
+              duration: 0.8,
+            },
+            0.05,
+          )
+          .to(
+            dot,
+            {
+              x: 36,
+              y: -26,
+              scale: 0.75,
+              backgroundColor: "#FB4D3D",
+              duration: 0.65,
+            },
+            0.08,
+          )
+          .to(
+            core,
+            {
+              scale: 1,
+              autoAlpha: 1,
+              backgroundColor: "#EAC435",
+              duration: 0.55,
+            },
+            0.18,
+          )
+          .to(
+            lineH,
+            {
+              scaleX: 0.95,
+              autoAlpha: 0.18,
+              duration: 0.6,
+            },
+            0,
+          )
+          .to(
+            lineV,
+            {
+              scaleY: 0.95,
+              autoAlpha: 0.18,
+              duration: 0.6,
+            },
+            0,
+          );
+      }
+
+      if (index === 2) {
+        tl.to(loop, {
+          autoAlpha: 0,
+          duration: 0.25,
+        })
+          .to(
+            orbit,
+            {
+              scale: 0.75,
+              rotate: 0,
+              autoAlpha: 0.22,
+              borderColor: "#03CEA4",
+              duration: 0.65,
+            },
+            0,
+          )
+          .to(
+            ring,
+            {
+              scale: 0.62,
+              autoAlpha: 0.5,
+              borderColor: "#03CEA4",
+              duration: 0.65,
+            },
+            0,
+          )
+          .to(
+            box,
+            {
+              scale: 1,
+              autoAlpha: 1,
+              borderColor: "#03CEA4",
+              duration: 0.75,
+            },
+            0.08,
+          )
+          .to(
+            dot,
+            {
+              x: 0,
+              y: 0,
+              scale: 0.55,
+              backgroundColor: "#03CEA4",
+              duration: 0.55,
+            },
+            0,
+          )
+          .to(
+            core,
+            {
+              scale: 0.6,
+              autoAlpha: 0.8,
+              backgroundColor: "#EAC435",
+              duration: 0.55,
+            },
+            0,
+          )
+          .to(
+            lineH,
+            {
+              scaleX: 1,
+              autoAlpha: 0.12,
+              duration: 0.6,
+            },
+            0,
+          )
+          .to(
+            lineV,
+            {
+              scaleY: 1,
+              autoAlpha: 0.12,
+              duration: 0.6,
+            },
+            0,
+          );
+      }
+
+      if (index === 3) {
+        tl.to([lineH, lineV], {
+          autoAlpha: 0.06,
+          duration: 0.4,
+        })
+          .to(
+            box,
+            {
+              scale: 0.78,
+              autoAlpha: 0.18,
+              borderColor: "#EAC435",
+              duration: 0.65,
+            },
+            0,
+          )
+          .to(
+            ring,
+            {
+              scale: 0.48,
+              autoAlpha: 0.28,
+              borderColor: "#EAC435",
+              duration: 0.65,
+            },
+            0,
+          )
+          .to(
+            orbit,
+            {
+              scale: 0.9,
+              rotate: 40,
+              autoAlpha: 0.22,
+              borderColor: "#03CEA4",
+              duration: 0.7,
+            },
+            0,
+          )
+          .to(
+            loop,
+            {
+              scale: 1,
+              rotate: 0,
+              autoAlpha: 1,
+              borderColor: "#EAC435",
+              duration: 0.85,
+            },
+            0.12,
+          )
+          .to(
+            dot,
+            {
+              x: 0,
+              y: -72,
+              scale: 0.6,
+              backgroundColor: "#EAC435",
+              duration: 0.7,
+            },
+            0.12,
+          )
+          .to(
+            core,
+            {
+              scale: 0.45,
+              autoAlpha: 0.65,
+              backgroundColor: "#03CEA4",
+              duration: 0.6,
+            },
+            0.12,
+          );
+      }
+
+      return tl;
+    };
+
+    const goTo = (index: number, direction: 1 | -1) => {
+      if (
+        animating ||
+        leaving ||
+        index < 0 ||
+        index >= stageEls.length
+      ) {
         return;
       }
 
       animating = true;
 
-      const incoming = sections[index];
+      const incoming = stageEls[index];
+      const factor = direction === 1 ? 1 : -1;
 
-      const incomingContent = incoming.querySelectorAll<HTMLElement>(
-        "[data-showcase-reveal]",
-      );
+      const incomingKicker =
+        incoming.querySelector<HTMLElement>("[data-kicker]");
 
-      const incomingRule = incoming.querySelector<HTMLElement>(
-        "[data-showcase-rule]",
-      );
+      const incomingTitle =
+        incoming.querySelector<HTMLElement>("[data-title]");
 
-      const incomingIndex = numberElements[index];
-
-      const directionFactor = direction === 1 ? 1 : -1;
+      const incomingDescription =
+        incoming.querySelector<HTMLElement>("[data-description]");
 
       const tl = gsap.timeline({
-        defaults: {
-          ease: "power4.inOut",
-        },
-
         onComplete: () => {
+          stageEls.forEach((stage, i) => {
+            if (i !== index) {
+              gsap.set(stage, {
+                autoAlpha: 0,
+                y: 16,
+              });
+            }
+          });
+
           animating = false;
         },
       });
 
-      /*
-      |--------------------------------------------------------------------------
-      | OUTGOING
-      |--------------------------------------------------------------------------
-      */
-
-      if (currentIndex >= 0) {
-        const outgoing = sections[currentIndex];
-
-        const outgoingTitle = splitTitles[currentIndex];
-
-        tl.to(
-          outgoingTitle.chars,
-          {
-            yPercent: -120 * directionFactor,
-
-            autoAlpha: 0,
-
-            stagger: {
-              each: 0.008,
-              from: direction === 1 ? "start" : "end",
-            },
-
-            duration: 0.55,
-
-            ease: "power3.in",
-          },
-          0,
-        );
+      if (current >= 0) {
+        const outgoing = stageEls[current];
 
         tl.to(
           outgoing,
           {
+            y: -14 * factor,
             autoAlpha: 0,
-            duration: 0.4,
+            duration: 0.35,
+            ease: "power2.inOut",
           },
-          0.35,
+          0,
         );
       }
 
-      /*
-      |--------------------------------------------------------------------------
-      | INCOMING BACKGROUND
-      |--------------------------------------------------------------------------
-      */
-
-      gsap.set(incoming, {
+      tl.set(incoming, {
         autoAlpha: 1,
-        zIndex: 2,
+        y: 0,
       });
 
-      /*
-      |--------------------------------------------------------------------------
-      | GIANT NUMBER
-      |--------------------------------------------------------------------------
-      */
-
-      if (incomingIndex) {
+      if (incomingKicker) {
         tl.fromTo(
-          incomingIndex,
+          incomingKicker,
           {
-            scale: 1.22,
+            y: 10 * factor,
             autoAlpha: 0,
           },
           {
-            scale: 1,
+            y: 0,
             autoAlpha: 1,
-            duration: 1.25,
+            duration: 0.45,
             ease: "power3.out",
           },
-          0.2,
+          0.3,
         );
       }
 
-      /*
-      |--------------------------------------------------------------------------
-      | MAIN TITLE
-      |--------------------------------------------------------------------------
-      */
-
-      tl.fromTo(
-        splitTitles[index].chars,
-        {
-          yPercent: 130 * directionFactor,
-
-          autoAlpha: 0,
-        },
-        {
-          yPercent: 0,
-          autoAlpha: 1,
-
-          stagger: {
-            each: 0.012,
-            from: "start",
-          },
-
-          duration: 0.9,
-
-          ease: "power4.out",
-        },
-        0.28,
-      );
-
-      /*
-      |--------------------------------------------------------------------------
-      | SUPPORTING CONTENT
-      |--------------------------------------------------------------------------
-      */
-
-      tl.fromTo(
-        incomingContent,
-        {
-          y: 30 * directionFactor,
-
-          autoAlpha: 0,
-        },
-        {
-          y: 0,
-          autoAlpha: 1,
-
-          stagger: 0.08,
-
-          duration: 0.7,
-
-          ease: "power3.out",
-        },
-        0.55,
-      );
-
-      /*
-      |--------------------------------------------------------------------------
-      | EDITORIAL RULE
-      |--------------------------------------------------------------------------
-      */
-
-      if (incomingRule) {
+      if (incomingTitle) {
         tl.fromTo(
-          incomingRule,
+          incomingTitle,
           {
-            scaleX: 0,
+            y: 24 * factor,
+            autoAlpha: 0,
           },
           {
-            scaleX: 1,
-            duration: 0.85,
-            ease: "power3.out",
+            y: 0,
+            autoAlpha: 1,
+            duration: 0.7,
+            ease: "power4.out",
           },
-          0.55,
+          0.34,
         );
       }
 
-      currentIndex = index;
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | LEAVE DOWN → NEXT PAGE SECTION
-    |--------------------------------------------------------------------------
-    */
-
-    function leaveShowcaseDown() {
-      if (leavingShowcase || animating) {
-        return;
+      if (incomingDescription) {
+        tl.fromTo(
+          incomingDescription,
+          {
+            y: 12 * factor,
+            autoAlpha: 0,
+          },
+          {
+            y: 0,
+            autoAlpha: 1,
+            duration: 0.55,
+            ease: "power3.out",
+          },
+          0.48,
+        );
       }
 
-      const nextSection = showcase.nextElementSibling as HTMLElement | null;
+      animateVisual(index);
+      setProgress(index);
 
-      if (!nextSection) return;
+      current = index;
+    };
 
-      leavingShowcase = true;
+    const leaveDown = () => {
+      if (leaving || animating) return;
 
-      observer.disable();
+      const next =
+        root.nextElementSibling as HTMLElement | null;
 
-      nextSection.scrollIntoView({
+      if (!next) return;
+
+      leaving = true;
+      active = false;
+
+      observer?.disable();
+
+      next.scrollIntoView({
         behavior: "smooth",
         block: "start",
       });
 
       window.setTimeout(() => {
-        leavingShowcase = false;
-      }, 1000);
-    }
+        leaving = false;
+      }, 900);
+    };
 
-    /*
-    |--------------------------------------------------------------------------
-    | LEAVE UP → HERO
-    |--------------------------------------------------------------------------
-    */
+    const leaveUp = () => {
+      if (leaving || animating) return;
 
-    function leaveShowcaseUp() {
-      if (leavingShowcase || animating) {
+      leaving = true;
+      active = false;
+
+      observer?.disable();
+
+      const previous =
+        root.previousElementSibling as HTMLElement | null;
+
+      if (previous) {
+        previous.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      } else {
+        window.scrollTo({
+          top: Math.max(
+            0,
+            root.offsetTop - window.innerHeight,
+          ),
+          behavior: "smooth",
+        });
+      }
+
+      window.setTimeout(() => {
+        leaving = false;
+      }, 900);
+    };
+
+    const handleDirection = (
+      direction: 1 | -1,
+    ) => {
+      if (
+        !active ||
+        leaving ||
+        animating ||
+        gestureLocked
+      ) {
         return;
       }
 
-      leavingShowcase = true;
+      gestureLocked = true;
 
-      observer.disable();
+      if (gestureTimer) {
+        clearTimeout(gestureTimer);
+      }
 
-      window.scrollTo({
-        top: Math.max(0, showcase.offsetTop - window.innerHeight),
+      gestureTimer = setTimeout(() => {
+        gestureLocked = false;
+      }, 700);
 
-        behavior: "smooth",
-      });
-
-      window.setTimeout(() => {
-        leavingShowcase = false;
-      }, 1000);
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | GSAP OBSERVER
-    |--------------------------------------------------------------------------
-    */
+      if (direction === 1) {
+        if (current >= stageEls.length - 1) {
+          leaveDown();
+        } else {
+          goTo(current + 1, 1);
+        }
+      } else {
+        if (current <= 0) {
+          leaveUp();
+        } else {
+          goTo(current - 1, -1);
+        }
+      }
+    };
 
     observer = Observer.create({
-      target: showcase,
-
+      target: root,
       type: "wheel,touch,pointer",
-
-      wheelSpeed: -1,
-
-      tolerance: 12,
-
       preventDefault: true,
-
-      /*
-       * scroll upward
-       */
-
-      onDown: () => {
-        if (animating || leavingShowcase) {
-          return;
-        }
-
-        if (currentIndex === 0) {
-          leaveShowcaseUp();
-
-          return;
-        }
-
-        goToSection(currentIndex - 1, -1);
-      },
-
-      /*
-       * scroll downward
-       */
-
-      onUp: () => {
-        if (animating || leavingShowcase) {
-          return;
-        }
-
-        const lastIndex = sections.length - 1;
-
-        if (currentIndex === lastIndex) {
-          leaveShowcaseDown();
-
-          return;
-        }
-
-        goToSection(currentIndex + 1, 1);
-      },
+      tolerance: 25,
+      wheelSpeed: -1,
+      onDown: () => handleDirection(-1),
+      onUp: () => handleDirection(1),
     });
 
-    /*
-    |--------------------------------------------------------------------------
-    | ENABLE OBSERVER ONLY WHILE THIS SECTION IS ACTIVE
-    |--------------------------------------------------------------------------
-    */
+    observer.disable();
 
-    const intersectionObserver = new IntersectionObserver(
+    const activateShowcase = () => {
+      if (leaving || active) return;
+
+      active = true;
+
+      window.scrollTo({
+        top: root.offsetTop,
+        behavior: "auto",
+      });
+
+      observer?.enable();
+    };
+
+    const intersection = new IntersectionObserver(
       ([entry]) => {
-        if (!entry || leavingShowcase) {
-          return;
+        if (!entry || leaving) return;
+
+        if (
+          entry.isIntersecting &&
+          entry.intersectionRatio >= 0.25
+        ) {
+          activateShowcase();
         }
 
-        if (entry.isIntersecting && entry.intersectionRatio >= 0.72) {
-          observer.enable();
-        } else {
-          observer.disable();
+        if (!entry.isIntersecting) {
+          active = false;
+          observer?.disable();
         }
       },
-
       {
-        threshold: [0, 0.25, 0.5, 0.72, 1],
+        threshold: [0, 0.1, 0.25, 0.5, 0.75, 1],
       },
     );
 
-    intersectionObserver.observe(showcase);
+    intersection.observe(root);
 
-    /*
-    |--------------------------------------------------------------------------
-    | FIRST SCREEN
-    |--------------------------------------------------------------------------
-    */
-
-    goToSection(0, 1);
-
-    /*
-    |--------------------------------------------------------------------------
-    | CLEANUP
-    |--------------------------------------------------------------------------
-    */
+    goTo(0, 1);
 
     return () => {
-      observer.kill();
+      if (gestureTimer) {
+        clearTimeout(gestureTimer);
+      }
 
-      intersectionObserver.disconnect();
+      observer?.kill();
+      intersection.disconnect();
 
-      splitTitles.forEach((split) => {
-        split.revert();
-      });
-
-      gsap.killTweensOf(sections);
-
-      gsap.killTweensOf(titleElements);
-
-      gsap.killTweensOf(numberElements);
+      gsap.killTweensOf("*");
     };
   }, []);
 
   return (
     <section
       ref={rootRef}
-      className="relative h-screen min-h-[700px] w-full overflow-hidden"
-      
+      className="relative h-[100svh] min-h-[600px] w-full overflow-hidden bg-[#07111F] text-white"
     >
-      {slides.map((slide, index) => {
-        const number = String(index + 1).padStart(2, "0");
 
-        const isLast = index === slides.length - 1;
-
-        return (
-          <section
-            key={slide.title}
-            className="
-                tce-showcase-slide
-                invisible
-                absolute
-                inset-0
-                overflow-hidden
-              "
-            style={{
-              backgroundColor: slide.background,
-
-              color: slide.foreground,
-            }}
-          >
-    
+      {/* VERY SUBTLE BACKGROUND */}
+      <div className="pointer-events-none absolute inset-0 opacity-[0.025] [background-image:radial-gradient(circle_at_center,white_0.7px,transparent_0.8px)] [background-size:7px_7px]" />
 
 
-            <div
-              data-showcase-reveal
-              className="
-                  absolute
-                  left-8
-                  right-8
-                  top-8
-                  z-20
-                  flex
-                  items-center
-                  justify-between
-                  sm:left-10
-                  sm:right-10
-                "
+      {/* HEADER */}
+      <header className="absolute left-5 right-5 top-6 z-30 flex items-center justify-between sm:left-8 sm:right-8 sm:top-8 md:left-12 md:right-12 lg:left-16 lg:right-16">
+        <p className="text-[9px] font-bold uppercase tracking-[.24em] text-white/70 sm:text-[10px]">
+          The Creative Explorer
+        </p>
+
+        <p className="text-[9px] font-medium uppercase tracking-[.18em] text-white/30">
+          An idea takes shape
+        </p>
+      </header>
+
+
+      {/* MAIN CANVAS */}
+      <div className="relative mx-auto h-full w-full max-w-[1400px] px-5 sm:px-8 md:px-12 lg:px-16">
+
+        {/* TEXT STAGES */}
+        <div className="absolute inset-x-5 bottom-[12%] top-[12%] sm:inset-x-8 md:inset-x-12 lg:inset-x-16">
+
+          {stages.map((stage, index) => (
+            <article
+              key={stage.title}
+              className="idea-stage invisible absolute inset-0 flex items-end pb-16 sm:items-center sm:pb-0"
             >
-             
-            </div>
-
-            {/* =================================================
-                  MAIN CONTENT
-              ================================================= */}
-
-            <div
-              className="
-                  relative
-                  z-10
-                  mx-auto
-                  flex
-                  h-full
-                  w-full
-                  max-w-[1500px]
-                  items-center
-                  px-7
-                  sm:px-12
-                  lg:px-16
-                  xl:px-20
-                "
-            >
-              <div
-                className="
-                    w-full
-                    max-w-[1150px]
-                  "
-              >
-
-            
-
-                {/* KICKER */}
+              <div className="relative z-20 max-w-[720px]">
 
                 <p
-                  data-showcase-reveal
-                  className="
-                      mt-8
-                      text-xs
-                      font-semibold
-                      uppercase
-                      tracking-[0.24em]
-                      sm:text-sm
-                    "
+                  data-kicker
+                  className="text-[9px] font-bold uppercase tracking-[.24em] sm:text-[10px]"
                   style={{
-                    color: slide.muted,
+                    color: stage.accent,
                   }}
                 >
-                  {slide.kicker}
+                  {stage.number} / {stage.label}
                 </p>
-
-                {/* TITLE */}
 
                 <h2
-                  className="
-                      tce-showcase-title
-                      mt-4
-                      max-w-[1100px]
-                      overflow-hidden
-                      font-abril
-                      text-[clamp(4.4rem,9vw,10rem)]
-                      font-black
-                      leading-[0.82]
-                      tracking-[-0.065em]
-                    "
+                  data-title
+                  className="mt-4 max-w-[700px] font-abril text-[clamp(3.1rem,11vw,4.8rem)] font-black leading-[.94] tracking-[-.04em] sm:mt-5 sm:text-[clamp(4rem,8vw,5.8rem)] lg:text-[clamp(4.5rem,6vw,6.4rem)]"
                 >
-                  {slide.title}
+                  {stage.title}
                 </h2>
 
-                {/* LINE */}
-
-                <div
-                  data-showcase-rule
-                  className="
-                      mt-9
-                      h-px
-                      w-full
-                      max-w-[180px]
-                      origin-left
-                    "
-                  style={{
-                    backgroundColor: slide.accent,
-                  }}
-                />
-
-                {/* DESCRIPTION */}
-
                 <p
-                  data-showcase-reveal
-                  className="
-                      mt-7
-                      max-w-2xl
-                      text-base
-                      leading-8
-                      sm:text-lg
-                      lg:text-xl
-                      lg:leading-9
-                    "
-                  style={{
-                    color: slide.muted,
-                  }}
+                  data-description
+                  className="mt-6 max-w-[560px] text-[14px] font-medium leading-7 text-[#A8B1BD] sm:mt-7 sm:text-[15px] md:text-base md:leading-8"
                 >
-                  {slide.description}
+                  {stage.description}
                 </p>
+
               </div>
-            </div>
+            </article>
+          ))}
 
-            {/* =================================================
-                  BOTTOM NAVIGATION
-              ================================================= */}
+        </div>
 
-            <div
-              data-showcase-reveal
-              className="
-                  absolute
-                  bottom-8
-                  left-8
-                  right-8
-                  z-20
-                  flex
-                  items-end
-                  justify-between
-                  sm:left-10
-                  sm:right-10
-                "
-            >
-              {/* PROGRESS */}
 
-              <div className="flex items-center gap-4">
-                {slides.map((_, dotIndex) => (
-                  <span
-                    key={dotIndex}
-                    className={`
-                          block
-                          h-px
-                          transition-all
-                          duration-500
+        {/* EVOLVING IDEA */}
+        <div
+          data-visual
+          className="pointer-events-none absolute right-[-60px] top-[16%] size-[280px] sm:right-[2%] sm:top-1/2 sm:size-[340px] sm:-translate-y-1/2 md:right-[5%] md:size-[400px] lg:right-[7%] lg:size-[470px]"
+        >
 
-                          ${dotIndex === index ? "w-12" : "w-4"}
-                        `}
-                    style={{
-                      backgroundColor:
-                        dotIndex === index ? slide.accent : slide.muted,
-                    }}
-                  />
-                ))}
-              </div>
-            </div>
-          </section>
-        );
-      })}
+          {/* HORIZONTAL AXIS */}
+          <span
+            data-line-h
+            className="absolute left-1/2 top-1/2 h-px w-[82%] -translate-x-1/2 bg-white origin-center"
+          />
+
+          {/* VERTICAL AXIS */}
+          <span
+            data-line-v
+            className="absolute left-1/2 top-1/2 h-[82%] w-px -translate-x-1/2 -translate-y-1/2 bg-white origin-center"
+          />
+
+          {/* OUTER LOOP */}
+          <span
+            data-loop
+            className="absolute left-1/2 top-1/2 size-[72%] -translate-x-1/2 -translate-y-1/2 rounded-full border"
+          />
+
+          {/* ORBIT */}
+          <span
+            data-orbit
+            className="absolute left-1/2 top-1/2 h-[42%] w-[72%] -translate-x-1/2 -translate-y-1/2 rounded-[50%] border"
+          />
+
+          {/* STRUCTURE */}
+          <span
+            data-box
+            className="absolute left-1/2 top-1/2 size-[45%] -translate-x-1/2 -translate-y-1/2 border"
+          />
+
+          {/* RING */}
+          <span
+            data-ring
+            className="absolute left-1/2 top-1/2 size-[26%] -translate-x-1/2 -translate-y-1/2 rounded-full border"
+          />
+
+          {/* CORE */}
+          <span
+            data-core
+            className="absolute left-1/2 top-1/2 size-4 -translate-x-1/2 -translate-y-1/2 rounded-full sm:size-5"
+          />
+
+          {/* MOVING IDEA */}
+          <span
+            data-dot
+            className="absolute left-1/2 top-1/2 size-3 -translate-x-1/2 -translate-y-1/2 rounded-full shadow-[0_0_28px_rgba(234,196,53,.35)] sm:size-3.5"
+          />
+
+        </div>
+
+      </div>
+
+
+      {/* FOOTER */}
+      <footer className="absolute bottom-6 left-5 right-5 z-30 sm:bottom-8 sm:left-8 sm:right-8 md:left-12 md:right-12 lg:left-16 lg:right-16">
+
+        <div className="mx-auto flex max-w-[1400px] items-end justify-between">
+
+          {/* PROGRESS */}
+          <div className="flex items-center gap-1.5">
+            {stages.map((stage, index) => (
+              <span
+                key={stage.label}
+                data-progress
+                className="block h-px bg-white"
+                style={{
+                  width: index === 0 ? 32 : 10,
+                  opacity: index === 0 ? 1 : 0.22,
+                }}
+              />
+            ))}
+          </div>
+
+
+          {/* SCROLL */}
+          <div className="text-right">
+            <p className="text-[8px] font-bold uppercase tracking-[.2em] text-white/45 sm:text-[9px]">
+              Scroll to explore
+            </p>
+
+            <span className="mt-2 block text-sm leading-none text-[#EAC435]">
+              ↓
+            </span>
+          </div>
+
+        </div>
+
+      </footer>
+
     </section>
   );
 }
