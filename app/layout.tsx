@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Abril_Fatface } from "next/font/google";
 import localFont from "next/font/local";
+import { Analytics } from "@vercel/analytics/next";
+
 import "./globals.css";
+
 import CartDrawer from "@/app/components/ui/shop/CartDrawer";
 
 const geistSans = Geist({
@@ -44,7 +47,6 @@ export const metadata: Metadata = {
   title: "The Creative Explorer",
   description: "Explore Creativity. Build Innovation.",
   icons: "/icon.png",
-  
 };
 
 export default function RootLayout({
@@ -57,7 +59,12 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} ${bebit.variable} ${abril.variable} h-full antialiased`}
     >
-      <body className="flex min-h-full flex-col">{children} <CartDrawer /></body>
+      <body className="flex min-h-full flex-col">
+        {children}
+
+        <CartDrawer />
+        <Analytics />
+      </body>
     </html>
   );
 }
